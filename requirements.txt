@@ -1,0 +1,13 @@
+ctransformers>=0.2.27
+langroid>=0.53.2
+pandas>=2.2.2
+numpy>=2.1.1
+openpyxl>=3.1.5
+Jinja2>=3.1.4
+tqdm>=4.66.5
+ollama>=0.4.7
+pypdf>=4.0.0
+duckdb>=1.0.0
+jmespath>=1.1.0
+faiss-cpu>=1.9.0.post1
+requests>=2.31.0
