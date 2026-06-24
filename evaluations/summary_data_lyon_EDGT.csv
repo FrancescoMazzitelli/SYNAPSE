@@ -1,0 +1,9 @@
+model,dataset,n_agents,n_matched_cols,n_categorical,n_numeric,n_free_text,entropy_oracle_median,entropy_agent_median,kl_median,bleu_global,rouge1,rouge2,rougeL,meteor,bertscore_f1,success_rate,avg_field_coverage,tgc,median_tgc,factual_accuracy,median_factual_accuracy,relevance_mean,relevance_median,report_path,error
+gemma2:27b,data_lyon_EDGT,200,229,10,19,0,0.8248,0.1955,4.1973,0,0.0,0.0,0.0,0.0,0.8537,1.0,0.9993,0.4177,0.3946,0.4571,0.5682,0.0,0.0,evaluations/gemma2:27b/data_lyon_EDGT/evaluation_report.txt,
+gemma2:9b,data_lyon_EDGT,200,229,27,44,0,0.8009,0.5712,1.3725,0,0.0,0.0,0.0,0.0,0.8668,1.0,0.9877,0.3643,0.3649,0.3493,0.2727,0.0,0.0,evaluations/gemma2:9b/data_lyon_EDGT/evaluation_report.txt,
+gemma3:27b,data_lyon_EDGT,200,229,19,21,0,0.8238,0.488,5.0471,0,0.0,0.0,0.0,0.0,0.8478,1.0,1.0,0.3328,0.3233,0.3365,0.0909,0.0,0.0,evaluations/gemma3:27b/data_lyon_EDGT/evaluation_report.txt,
+gpt-oss:20b,data_lyon_EDGT,200,229,29,48,0,0.8103,0.602,0.6779,0,0.0,0.0,0.0,0.0,0.8521,1.0,0.9703,0.37,0.368,0.2919,0.2273,0.0,0.0,evaluations/gpt-oss:20b/data_lyon_EDGT/evaluation_report.txt,
+llama3.1:8b,data_lyon_EDGT,200,229,24,37,0,0.7671,0.6115,1.2546,0,0.0,0.0,0.0,0.0,0.8484,1.0,0.9998,0.3535,0.3483,0.3512,0.3409,0.0,0.0,evaluations/llama3.1:8b/data_lyon_EDGT/evaluation_report.txt,
+llama3.3:70b,data_lyon_EDGT,200,229,27,42,0,0.8009,0.549,0.8202,0,0.0,0.0,0.0,0.0,0.8512,1.0,0.9976,0.3637,0.3572,0.328,0.2632,0.0,0.0,evaluations/llama3.3:70b/data_lyon_EDGT/evaluation_report.txt,
+mistral-nemo:12b,data_lyon_EDGT,200,229,30,40,0,0.813,0.6301,1.079,0,0.0,0.0,0.0,0.0,0.8516,1.0,0.9996,0.3262,0.3217,0.2969,0.1971,0.0,0.0,evaluations/mistral-nemo:12b/data_lyon_EDGT/evaluation_report.txt,
+mistral:7b,data_lyon_EDGT,,,,,,,,,,,,,,,,,,,,,,,,[Errno 2] No such file or directory: 'results/mistral:7b/data_lyon_EDGT/20260618_1056_results.csv'

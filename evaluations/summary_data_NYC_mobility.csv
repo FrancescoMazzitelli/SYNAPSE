@@ -1,0 +1,9 @@
+model,dataset,n_agents,n_matched_cols,n_categorical,n_numeric,n_free_text,entropy_oracle_median,entropy_agent_median,kl_median,bleu_global,rouge1,rouge2,rougeL,meteor,bertscore_f1,success_rate,avg_field_coverage,tgc,median_tgc,factual_accuracy,median_factual_accuracy,relevance_mean,relevance_median,report_path,error
+gemma2:27b,data_NYC_mobility,,,,,,,,,,,,,,,,,,,,,,,,'Accuracy'
+gemma2:9b,data_NYC_mobility,,,,,,,,,,,,,,,,,,,,,,,,'Accuracy'
+gemma3:27b,data_NYC_mobility,,,,,,,,,,,,,,,,,,,,,,,,'Accuracy'
+gpt-oss:20b,data_NYC_mobility,,,,,,,,,,,,,,,,,,,,,,,,'Accuracy'
+llama3.1:8b,data_NYC_mobility,,,,,,,,,,,,,,,,,,,,,,,,'Accuracy'
+llama3.3:70b,data_NYC_mobility,,,,,,,,,,,,,,,,,,,,,,,,'Accuracy'
+mistral-nemo:12b,data_NYC_mobility,,,,,,,,,,,,,,,,,,,,,,,,'Accuracy'
+mistral:7b,data_NYC_mobility,,,,,,,,,,,,,,,,,,,,,,,,'Accuracy'
