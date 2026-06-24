@@ -36,6 +36,11 @@
         "ollama_url": "http://localhost:11434",
         "model": "phi4-reasoning:14b",
         "timeout": 120,
+        "valhalla": {
+            "enabled": false,
+            "tile_dir": "/tmp/valhalla_tiles",
+            "costing": "auto"
+        },
         "services": {
             "valhalla-routing": {
                 "name": "Valhalla Routing Service",

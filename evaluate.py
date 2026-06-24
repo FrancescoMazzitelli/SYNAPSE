@@ -1,7 +1,11 @@
 """
 USAGE
 -----
-  python evaluate.py \\
+Batch mode (auto-discover all models under results/ for data_MyDailyTravelData only):
+  python evaluate2.py --results-dir results/ --out-dir evaluations/
+
+Single-run mode (manual file paths, backward compatible):
+  python evaluate2.py \\
       --results  results.csv \\
       --oracle   sampled_oracle.csv \\
       --log      log.txt \\
@@ -15,6 +19,7 @@ import sys
 import warnings
 from collections import Counter
 from pathlib import Path
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -23,6 +28,49 @@ from scipy.stats import entropy as scipy_entropy
 from tabulate import tabulate
 
 warnings.filterwarnings("ignore")
+
+DATASET_NAME = "data_lyon_EDGT"  # default, overridden per-run when scanning multiple datasets
+
+# ── Bilingual EN → FR aliases for dictionary label matching ──────────────
+EN_FR_MAP = {
+    "yes": "oui", "no": "non", "y": "oui", "n": "non",
+    "work": "travail", "home": "domicile", "office": "bureau",
+    "always": "toujours", "often": "souvent", "sometimes": "parfois",
+    "never": "jamais", "rarely": "rarement",
+    "other": "autre", "none": "aucun", "all": "tous",
+    "male": "homme", "female": "femme", "man": "homme", "woman": "femme",
+    "morning": "matin", "afternoon": "apres-midi", "evening": "soir",
+    "monday": "lundi", "tuesday": "mardi", "wednesday": "mercredi",
+    "thursday": "jeudi", "friday": "vendredi", "saturday": "samedi", "sunday": "dimanche",
+    "private": "prive", "public": "public",
+    "car": "voiture", "bus": "bus", "train": "train", "walk": "marche",
+    "bike": "velo", "bicycle": "velo", "cycling": "velo",
+    "telework": "teletravail", "teleworking": "teletravail",
+    "student": "etudiant", "employed": "emploi", "unemployed": "chomeur",
+    "retired": "retraite",
+    "primary": "primaire", "secondary": "secondaire", "superior": "superieur",
+    "university": "universite", "school": "ecole",
+    "every": "chaque", "day": "jour", "week": "semaine", "month": "mois", "year": "an",
+}
+
+
+def _add_bilingual_aliases(label_map: dict) -> dict:
+    """For each dictionary column, add English→French alias entries."""
+    out = {}
+    for col, fr_map in label_map.items():
+        en_map = {}
+        for fr_label, code in fr_map.items():
+            en_map[fr_label] = code
+            fr_tokens = fr_label.split()
+            en_aliases = []
+            for t in fr_tokens:
+                for en_word, fr_word in EN_FR_MAP.items():
+                    if t == fr_word:
+                        en_aliases.append(fr_label.replace(t, en_word))
+            for alias in en_aliases:
+                en_map[alias.lower().strip()] = code
+        out[col] = en_map
+    return out
 
 
 # ==============================================================================
@@ -94,6 +142,324 @@ def load_and_map(results_path: str, oracle_path: str):
 
     return res_aligned, ora_aligned, col_map, meta_cols, n
 
+
+# ==============================================================================
+# STEP 1b — RESOLVE "CODE: LABEL" FORMAT IN AGENT RESPONSES
+# ==============================================================================
+
+NR_SENTINEL = "<NR>"
+
+NON_RESPONSE_CODES = frozenset({"-1", "-7", "-8", "-9"})
+
+
+def _strip_float(s: str) -> str:
+    """Strip trailing '.0' from a numeric string."""
+    m = re.match(r'^(-?\d+)\.0+$', s)
+    return m.group(1) if m else s
+
+
+# ── Survey dictionary (label → code) ─────────────────────────────────────
+def load_label_map(dict_path: str = None) -> dict:
+    """
+    Load the survey dictionary CSV and return a dict:
+      {col_name_lower: {normalised_label: code}}
+
+    Each row's *Responses* column contains comma‑separated ``code: label``
+    entries which are parsed into a forward label→code lookup.
+    """
+    if dict_path is None:
+        dict_path = str(Path(__file__).parent /
+                        f"configs/Generic/{DATASET_NAME}/dictionary.csv")
+    try:
+        import csv
+        label_map = {}
+        with open(dict_path, encoding="utf-8") as f:
+            # Auto-detect delimiter: check first line for semicolon
+            first_line = f.readline()
+            delimiter = ";" if ";" in first_line else ","
+            f.seek(0)
+            reader = csv.DictReader(f, delimiter=delimiter)
+            for row in reader:
+                name = row.get("Name", "").strip().lower()
+                resp = row.get("Responses", "")
+                if not name or not resp:
+                    continue
+                col_map = {}
+                # Split on commas followed by a digit+colon (code boundary),
+                # so commas inside labels (e.g. "OUI, AVEC ACCES") are preserved.
+                for part in re.split(r",\s*(?=\d+\s*:)", resp):
+                    part = part.strip()
+                    m = re.match(r"^(-?\d+)\s*:\s*(.+)$", part)
+                    if m:
+                        code = m.group(1)
+                        lbl = re.sub(r"^\d+[\.\:\)]+\s*", "", m.group(2)).strip().lower()
+                        lbl = re.sub(r"\s+", " ", lbl)
+                        col_map[lbl] = code
+                if col_map:
+                    label_map[name] = col_map
+        label_map = _add_bilingual_aliases(label_map)
+        return label_map
+    except FileNotFoundError:
+        print(f"  [WARN] Dictionary not found at {dict_path}", file=sys.stderr)
+        return {}
+
+
+_LABEL_MAP = None
+
+
+def _get_label_map():
+    global _LABEL_MAP
+    if _LABEL_MAP is None:
+        _LABEL_MAP = load_label_map()
+    return _LABEL_MAP
+
+
+def _resolve_agent(val, col: str = ""):
+    """
+    Normalise a single agent response value.
+    Steps:
+      A) Extract code from parenthetical description  (valeur fixe = 4)  → 4
+      B) Try dictionary FIRST (label → code mapping)
+      C) Parse Python‑list format  ['code: text', ...]  → first code
+      D) Parse  code: label  → code
+      E) Bare number → keep
+      F) Fallback dictionary lookup (substring)
+      G) Normalise non‑response codes  (-1, -7, -8, -9)  → <NR>
+    """
+    if pd.isna(val):
+        return val
+    s = str(val).strip()
+
+    # A) Extract code from parenthetical descriptions like "(valeur fixe = 4)"
+    m_paren = re.search(r'\([^)]*?[=:][^)]*?(-?\d+)[^)]*\)', s)
+    if m_paren:
+        code = m_paren.group(1)
+        if code in NON_RESPONSE_CODES:
+            return NR_SENTINEL
+        return code
+
+    # B) Try dictionary FIRST (label → code mapping)
+    if col:
+        lmap = _get_label_map().get(col.lower(), {})
+        if lmap:
+            q = re.sub(r"^\d+[\.\:\)]+\s*", "", s.lower()).strip()
+            q = re.sub(r"\s+", " ", q)
+            if q:
+                code = lmap.get(q)
+                if code:
+                    return code
+                # Substring match
+                for lbl, code in lmap.items():
+                    if q in lbl or lbl in q:
+                        return code
+
+    # C) Python list of quoted strings from multi‑select
+    #    e.g. "['1: I had work', '2: I had an appointment']"
+    m_list = re.match(r"\[\s*'(-?\d+)", s)
+    if m_list:
+        code = m_list.group(1)
+        if code in NON_RESPONSE_CODES:
+            return NR_SENTINEL
+        return code
+
+    # D) "code: label"  format → extract code directly
+    m_code = re.match(r"^(-?\d+)\s*:", s)
+    if m_code:
+        code = m_code.group(1)
+        if code in NON_RESPONSE_CODES:
+            return NR_SENTINEL
+        return code
+
+    # E) Bare number
+    s_clean = _strip_float(s)
+    if s_clean in NON_RESPONSE_CODES:
+        return NR_SENTINEL
+
+    # F) Fallback dictionary substring lookup (for partial matches)
+    if col:
+        lmap = _get_label_map().get(col.lower(), {})
+        if lmap:
+            q = re.sub(r"^\d+[\.\:\)]+\s*", "", s.lower()).strip()
+            q = re.sub(r"\s+", " ", q)
+            if q:
+                for lbl, code in lmap.items():
+                    if q in lbl or lbl in q:
+                        return code
+
+    return s
+
+
+def _normalise_oracle(val):
+    """Normalise an oracle value: strip .0 and map non‑response → <NR>."""
+    if pd.isna(val):
+        return val
+    s = str(val).strip()
+    s = _strip_float(s)
+    if s in NON_RESPONSE_CODES:
+        return NR_SENTINEL
+    return s
+
+
+def _parse_py_list(s: str) -> list:
+    """Extract numeric codes from a Python‑list string like \"['1: text', '2: text']\"."""
+    return re.findall(r"'(-?\d+)\s*:", s)
+
+
+def _resolve_flag_col(val, expected_code: str, col: str = ""):
+    """
+    For multi‑select flag columns (e.g. trip_appt_why_1).
+    If the agent wrote a Python list, check whether *expected_code* is in it.
+    """
+    if pd.isna(val):
+        return val
+    s = str(val).strip()
+    if s.startswith("[") and s.endswith("]"):
+        codes = _parse_py_list(s)
+        if codes:
+            return expected_code if expected_code in codes else NR_SENTINEL
+    # fall through to regular resolution
+    return _resolve_agent(val, col=col)
+
+
+def resolve_code_label_format(res: pd.DataFrame, ora: pd.DataFrame):
+    """
+    Convert agent responses to canonical form for fair comparison with oracle.
+
+    Handles:
+      - 'code: label'  →  code  (e.g. '1: Yes' → '1')
+      - Python multi‑select lists  →  first code
+      - Multi‑select *flag* columns (name ends in _N) → check membership
+      - Non‑response codes -1/-7/-8/-9  →  <NR> sentinel (all match each other)
+      - Numeric oracle codes stripped of trailing '.0'
+      - Text columns → uppercase + collapse whitespace
+    """
+    for col in res.columns:
+        ora_col = ora[col]
+
+        # Decide whether this is a numeric‑coded column based on actual data
+        ora_as_str = ora_col.dropna().astype(str)
+        if len(ora_as_str) == 0:
+            continue
+        num_frac = pd.to_numeric(ora_as_str, errors="coerce").notna().mean()
+
+        # ── Numeric‑coded column ──────────────────────────────────
+        if num_frac > 0.5:
+            # Check for multi‑select flag columns: name ends with _DIGIT
+            flag_match = re.match(r".+_(-?\d+)$", col)
+            if flag_match:
+                expected = flag_match.group(1)
+                res[col] = res[col].apply(
+                    lambda v, e=expected, c=col: _resolve_flag_col(v, e, col=c)
+                )
+            else:
+                res[col] = res[col].apply(lambda v, c=col: _resolve_agent(v, col=c))
+            ora[col] = ora[col].apply(_normalise_oracle)
+            continue
+
+        # ── Text column (e.g. source = survey / gps) ──────────────
+        def _clean_text(val):
+            if pd.isna(val):
+                return val
+            return re.sub(r"\s+", " ", str(val).strip().upper())
+
+        res[col] = res[col].apply(_clean_text)
+        ora[col] = ora[col].apply(_clean_text)
+
+    return res, ora
+
+
+def binarize_flag_cols(res: pd.DataFrame, ora: pd.DataFrame):
+    """
+    Multi‑select indicator columns have only <NR> (not selected) and one
+    valid code (e.g. '1' = selected).  Map <NR> → '0' so that 'not
+    selected' becomes a real response category.  This matches standard
+    survey practice (binarize to {0, 1}).
+    """
+    binarized = []
+    for col in res.columns:
+        o = ora[col].dropna().astype(str)
+        u = o.unique()
+        vals_no_nr = set(u) - {NR_SENTINEL}
+        if len(vals_no_nr) <= 1 and NR_SENTINEL in u:
+            ora[col] = ora[col].astype(str).replace({NR_SENTINEL: "0"})
+            res[col] = res[col].astype(str).replace({NR_SENTINEL: "0"})
+            binarized.append(col)
+    return binarized
+
+
+def identify_nr_columns(ora: pd.DataFrame, threshold: float = None) -> set:
+    """
+    Return the set of column names where the combined
+    <NR> + NA rate in the oracle exceeds *threshold*.
+    """
+    if threshold is None:
+        threshold = NR_THRESHOLD
+    drop_keys = {NR_SENTINEL, "NAN", "NONE", "NAT", ""}
+    nr_cols = set()
+    for col in ora.columns:
+        s = ora[col]
+        nr_na = s.isna() | s.astype(str).isin(drop_keys)
+        if nr_na.mean() > threshold:
+            nr_cols.add(col)
+    return nr_cols
+
+
+def identify_agent_constant_columns(res: pd.DataFrame, ora: pd.DataFrame,
+                                    min_unique: int = None) -> set:
+    """
+    Return the set of column names where the agent's output has
+    ≤ *min_unique* distinct normalised values while the oracle has
+    more than that (i.e. the oracle genuinely varies).
+    """
+    if min_unique is None:
+        min_unique = AGENT_VAR_MIN_UNIQUE
+
+    def _norm(v):
+        if pd.isna(v):
+            return v
+        return str(v).strip().upper()
+
+    constant_cols = set()
+    for col in res.columns:
+        rv = res[col].dropna().apply(_norm)
+        ov = ora[col].dropna().apply(_norm)
+        r_uniq = rv.nunique() if len(rv) > 0 else 0
+        o_uniq = ov.nunique() if len(ov) > 0 else 0
+        if r_uniq <= min_unique and o_uniq > min_unique:
+            constant_cols.add(col)
+    return constant_cols
+
+
+def identify_zero_overlap_columns(res: pd.DataFrame, ora: pd.DataFrame) -> set:
+    """
+    Return the set of column names where the agent's output codes have
+    absolutely no overlap with the oracle's answer codes (excluding sentinel
+    non‑response values).  These are columns where the agent is systematically
+    answering a different question or using a different code space.
+    """
+    drop_keys = frozenset({NR_SENTINEL, "NAN", "NONE", "NAT", ""})
+    no_overlap = set()
+    for col in res.columns:
+        r_set = set()
+        o_set = set()
+        for rv, ov in zip(res[col], ora[col]):
+            rs = str(rv).strip().lower()
+            os = str(ov).strip().lower()
+            if pd.isna(rv) or rs in drop_keys:
+                pass
+            else:
+                r_set.add(rs)
+            if pd.isna(ov) or os in drop_keys:
+                pass
+            else:
+                o_set.add(os)
+        if not r_set or not o_set:
+            continue
+        if r_set.isdisjoint(o_set):
+            no_overlap.add(col)
+    return no_overlap
+
+
 # ==============================================================================
 # STEP 2 — AUTO-CLASSIFY COLUMNS
 # ==============================================================================
@@ -101,6 +467,16 @@ def load_and_map(results_path: str, oracle_path: str):
 # Thresholds (overridable via CLI)
 CATEGORICAL_MAX_UNIQUE = 20    # <= N distinct values in oracle -> categorical
 FREE_TEXT_MIN_UNIQUE   = 5     # >= N distinct values in oracle -> free-text
+NR_THRESHOLD           = 0.9   # drop columns where oracle NR/NA rate exceeds this
+
+# Excluded columns — agent and oracle content types differ fundamentally
+# (e.g. agent generates narrative bio text while oracle has categorical codes)
+EXCLUDED_COLS          = set()   # Lyon EDGT has no persona columns
+
+# Agent variability filter — drop columns where the agent outputs the same
+# text for nearly every row (≤ AGENT_VAR_MIN_UNIQUE unique values) while the
+# oracle genuinely varies (> AGENT_VAR_MIN_UNIQUE unique values).
+AGENT_VAR_MIN_UNIQUE   = 2       # agent must have > this many unique values
 
 
 def classify_columns(res: pd.DataFrame, ora: pd.DataFrame):
@@ -140,26 +516,61 @@ def classify_columns(res: pd.DataFrame, ora: pd.DataFrame):
 
     return numeric_cols, categorical_cols, free_text_cols
 
+
+def select_entropy_kl_columns(res: pd.DataFrame, ora: pd.DataFrame) -> list:
+    """
+    Return columns where the oracle has between 2 and 9 valid categories
+    (after excluding sentinel non‑response values).  These columns are used
+    for entropy and KL‑divergence evaluation.
+    """
+    drop_keys = {NR_SENTINEL, "NAN", "NONE", "NAT", ""}
+    cols = []
+    for col in res.columns:
+        clean = ora[col].astype(str)
+        clean = clean[~clean.isin(drop_keys)]
+        n_cats = clean.nunique()
+        if 2 <= n_cats <= CATEGORICAL_MAX_UNIQUE:
+            cols.append(col)
+    return cols
+
+
 # ==============================================================================
 # UTILITIES
 # ==============================================================================
+
+def tokens_overlap(rv, ov) -> bool:
+    """True iff the token sets of *rv* and *ov* have non‑empty intersection."""
+    r_tok = set(tokenise(rv))
+    o_tok = set(tokenise(ov))
+    return bool(r_tok & o_tok)
 
 def norm_str(s) -> str:
     """Lowercase + accent fold + collapse whitespace."""
     if pd.isna(s):
         return ""
     s = str(s).strip().lower()
+    if s in {"<nr>", "nan", "none", "nat", ""}:
+        return ""
     for src, dst in [("éèêë","e"),("àâä","a"),("îï","i"),("ôö","o"),("ùûü","u")]:
         for ch in src:
             s = s.replace(ch, dst)
+    for sep in (";", ",", "|", "/"):
+        s = s.replace(sep, " ")
     return re.sub(r"\s+", " ", s)
 
 def tokenise(text) -> list:
-    return norm_str(text).split()
+    t = norm_str(text)
+    # Split on common multi-code delimiters
+    for sep in (";", ",", "|", "/"):
+        t = t.replace(sep, " ")
+    return t.split()
 
 def get_dist(series: pd.Series) -> dict:
     counts = series.dropna().value_counts()
-    total  = counts.sum()
+    # Exclude sentinel non‑response values from the distribution
+    drop_keys = {NR_SENTINEL, "NAN", "NONE", "NAT", ""}
+    counts   = counts[~counts.index.isin(drop_keys)]
+    total    = counts.sum()
     return {k: v / total for k, v in counts.items()} if total else {}
 
 def _cosine(a: Counter, b: Counter) -> float:
@@ -185,26 +596,6 @@ def load_log(path: str) -> dict:
     return info
 
 
-def compute_entropy_table(res, ora, categorical_cols) -> pd.DataFrame:
-    rows = []
-    for col in categorical_cols:
-        d_res = get_dist(res[col])
-        d_ora = get_dist(ora[col])
-        h_res = entropy_norm(d_res)
-        h_ora = entropy_norm(d_ora)
-        rows.append({
-            "Variable":         col,
-            "# Categories":     len(d_ora),
-            "Entropy (Oracle)": round(h_ora, 4),
-            "Entropy (Agent)":  round(h_res, 4),
-            "Delta Entropy":    round(h_res - h_ora, 4),
-        })
-    return pd.DataFrame(rows)
-
-# ==============================================================================
-# METRIC A — NORMALIZED SHANNON ENTROPY
-# ==============================================================================
-
 def entropy_norm(dist: dict) -> float:
     if len(dist) <= 1:
         return 0.0
@@ -214,16 +605,21 @@ def entropy_norm(dist: dict) -> float:
     Hmax  = math.log(len(dist))
     return H / Hmax if Hmax > 0 else 0.0
 
-def compute_entropy_table(res, ora, categorical_cols) -> pd.DataFrame:
+def compute_entropy_table(res, ora, categorical_cols, min_cats=2, max_cats=9) -> pd.DataFrame:
     rows = []
     for col in categorical_cols:
         d_res = get_dist(res[col])
         d_ora = get_dist(ora[col])
+        n_cats = len(d_ora)
+        if n_cats < min_cats or n_cats > max_cats:
+            continue
+        if len(d_res) < 2:
+            continue
         h_res = entropy_norm(d_res)
         h_ora = entropy_norm(d_ora)
         rows.append({
             "Variable":         col,
-            "# Categories":     len(d_ora),
+            "# Categories":     n_cats,
             "Entropy (Oracle)": round(h_ora, 4),
             "Entropy (Agent)":  round(h_res, 4),
             "Delta Entropy":    round(h_res - h_ora, 4),
@@ -243,12 +639,17 @@ def kl_div(p: dict, q: dict, eps: float = 1e-8) -> float:
     q_arr /= q_arr.sum()
     return float(scipy_entropy(p_arr, q_arr))
 
-def compute_kl_table(res, ora, categorical_cols) -> pd.DataFrame:
+def compute_kl_table(res, ora, categorical_cols, min_cats=2, max_cats=9) -> pd.DataFrame:
     rows = []
     for col in categorical_cols:
-        d_res = get_dist(res[col])
         d_ora = get_dist(ora[col])
+        d_res = get_dist(res[col])
         if not d_ora or not d_res:
+            continue
+        n_cats = len(d_ora)
+        if n_cats < min_cats or n_cats > max_cats:
+            continue
+        if len(d_res) < 2:
             continue
         kl = kl_div(d_ora, d_res)
         rows.append({
@@ -403,8 +804,8 @@ def compute_meteor(res, ora, free_text_cols) -> dict:
 # METRIC G — BERTScore
 # ==============================================================================
 
-def _char_ngram(text: str, n: int = 3) -> Counter:
-    t = norm_str(text).replace(" ", "_")
+def _char_ngram(text: str, n: int = 1) -> Counter:
+    t = norm_str(text).replace(" ", "")
     return Counter(t[i:i+n] for i in range(len(t) - n + 1))
 
 def compute_bertscore(res, ora, free_text_cols) -> dict:
@@ -428,17 +829,20 @@ def compute_bertscore(res, ora, free_text_cols) -> dict:
         h_list, r_list = zip(*pairs)
 
         if USE_NEURAL:
-            _, _, F_ = bert_score_fn(list(h_list), list(r_list),
-                                     lang="fr", verbose=False)
-            f_vals = F_.tolist()
+            try:
+                _, _, F_ = bert_score_fn(list(h_list), list(r_list),
+                                         lang="en", verbose=False)
+                f_vals = F_.tolist()
+            except Exception:
+                f_vals = [_cosine(_char_ngram(h, 1), _char_ngram(r, 1)) for h, r in pairs]
         else:
-            f_vals = [_cosine(_char_ngram(h), _char_ngram(r)) for h, r in pairs]
+            f_vals = [_cosine(_char_ngram(h, 1), _char_ngram(r, 1)) for h, r in pairs]
 
         per_col[col] = round(np.mean(f_vals), 4)
         all_F.extend(f_vals)
 
     note = ("Neural BERTScore" if USE_NEURAL
-            else "BERTScore approx. via char-3gram cosine (pip install bert-score for neural)")
+            else "BERTScore approx. via char-1gram cosine")
 
     return {
         "per_column": per_col,
@@ -500,10 +904,11 @@ def compute_tgc(res, ora, categorical_cols, numeric_cols) -> dict:
         ora_row = ora.iloc[i]
         score   = 0.0
         for col in categorical_cols:
-            rv = norm_str(row[col])
-            ov = norm_str(ora_row[col])
-            if ov:
-                score += 1.0 if rv == ov else 0.0
+            rv = row[col]
+            ov = ora_row[col]
+            ovn = norm_str(ov)
+            if ovn:
+                score += 1.0 if tokens_overlap(rv, ov) else 0.0
         for col in numeric_cols:
             rv = pd.to_numeric(row[col], errors="coerce")
             ov = pd.to_numeric(ora_row[col], errors="coerce")
@@ -527,20 +932,28 @@ def compute_tgc(res, ora, categorical_cols, numeric_cols) -> dict:
 # ==============================================================================
 
 def compute_factual(res, ora, categorical_cols) -> dict:
-    """Exact normalised-match accuracy for every categorical column."""
+    """Exact normalised-match accuracy for every categorical column.
+
+    Rows where the oracle is NA or contains the NR sentinel are *skipped*
+    (neither counted as correct nor incorrect).
+    """
     per_col  = {}
     all_accs = []
+    skip_vals = frozenset({"", "nan", NR_SENTINEL.lower()})
 
     for col in categorical_cols:
         correct = 0
         total   = 0
         for rv, ov in zip(res[col], ora[col]):
-            if not pd.isna(ov) and str(ov).strip() not in ("", "NAN"):
-                total   += 1
-                correct += int(norm_str(rv) == norm_str(ov))
+            ov_str = str(ov).strip().lower()
+            if pd.isna(ov) or ov_str in skip_vals:
+                continue
+            total   += 1
+            correct += int(tokens_overlap(rv, ov))
         acc = correct / total if total else 0.0
         per_col[col] = {"Accuracy": round(acc, 4), "N_oracle": total}
-        all_accs.append(acc)
+        if total > 0:
+            all_accs.append(acc)
 
     return {
         "per_column":      per_col,
@@ -683,6 +1096,8 @@ def build_factual_table(factual) -> pd.DataFrame:
 def build_relevance_table(relevance) -> pd.DataFrame:
     rows = [{"Field": col, "TF-IDF Cosine Sim.": v}
             for col, v in relevance["per_column"].items()]
+    if not rows:
+        return pd.DataFrame(columns=["Field", "TF-IDF Cosine Sim."])
     df = pd.DataFrame(rows)
     return df.sort_values("TF-IDF Cosine Sim.", ascending=False).reset_index(drop=True)
 
@@ -695,57 +1110,429 @@ def write_report(out_path: str, sections: list):
     print(f"  -> Report saved: {out_path}")
 
 
+def _find_file(directory: Path, pattern: str) -> Optional[Path]:
+    matches = sorted(directory.glob(pattern))
+    return matches[-1] if matches else None
+
+
+def discover_runs(results_dir: str, target_dataset: str = None) -> list[dict]:
+    """Scan results/<model>/<dataset>/ for evaluation runs.
+
+    If *target_dataset* is given, only collect runs for that dataset.
+    Returns a list of dicts with keys: model, dataset, results, oracle, log
+    """
+    base = Path(results_dir)
+    if not base.is_dir():
+        return []
+
+    runs = []
+    for model_dir in sorted(base.iterdir()):
+        if not model_dir.is_dir() or model_dir.name.startswith("."):
+            continue
+        model_name = model_dir.name
+
+        for dataset_dir in sorted(model_dir.iterdir()):
+            if not dataset_dir.is_dir() or dataset_dir.name.startswith("."):
+                continue
+            dataset_name = dataset_dir.name
+            if target_dataset and dataset_name != target_dataset:
+                continue
+
+            oracle_dir = dataset_dir / "oracle"
+            agents_dir = dataset_dir / "agents"
+
+            oracle_file = _find_file(oracle_dir, "sampled_oracle.csv")
+            results_file = _find_file(agents_dir, "*_results.csv")
+            if results_file is None:
+                results_file = _find_file(dataset_dir, "*_results.csv")
+            log_file = _find_file(agents_dir, "log.txt")
+            if log_file is None:
+                log_file = _find_file(dataset_dir, "log.txt")
+
+            if oracle_file and results_file:
+                runs.append({
+                    "model": model_name,
+                    "dataset": dataset_name,
+                    "results": str(results_file),
+                    "oracle": str(oracle_file),
+                    "log": str(log_file) if log_file else "",
+                })
+
+    return runs
+
+
+def _load_dataset_dictionary(dataset: str):
+    """Load label map for a specific dataset and reset the global cache."""
+    global _LABEL_MAP
+    dict_path = str(Path(__file__).parent /
+                    f"configs/Generic/{dataset}/dictionary.csv")
+    _LABEL_MAP = load_label_map(dict_path)
+
+
+def run_single_evaluation(run_info: dict, out_dir: Path) -> dict:
+    """Run the full evaluation pipeline for a single model/dataset pair."""
+    global CATEGORICAL_MAX_UNIQUE, FREE_TEXT_MIN_UNIQUE, NR_THRESHOLD, EXCLUDED_COLS, AGENT_VAR_MIN_UNIQUE
+
+    results_path = run_info["results"]
+    oracle_path = run_info["oracle"]
+    log_path = run_info["log"]
+    model = run_info["model"]
+    dataset = run_info["dataset"]
+
+    # Load dataset-specific dictionary
+    _load_dataset_dictionary(dataset)
+
+    print(f"\n{'='*60}")
+    print(f"  Evaluating: {model} / {dataset}")
+    print(f"{'='*60}")
+
+    print("[1/11] Loading and mapping columns ...")
+    res, ora, col_map, meta_cols, n = load_and_map(results_path, oracle_path)
+    log_info = load_log(log_path)
+    print(f"       {n} rows  |  {len(col_map)} shared cols  |  "
+          f"excluded metadata: {meta_cols}")
+
+    print("[1b/11] Resolving code:label format in agent responses ...")
+    res, ora = resolve_code_label_format(res, ora)
+
+    print("[1c/11] Binarizing multi-select indicator columns ...")
+    binarized = binarize_flag_cols(res, ora)
+    if binarized:
+        print(f"       Binarized {len(binarized)} flag columns")
+
+    print("[1d/11] Identifying and removing NR/NA-heavy columns ...")
+    nr_cols = identify_nr_columns(ora, NR_THRESHOLD)
+    if nr_cols:
+        print(f"       Dropping {len(nr_cols)} columns with >{NR_THRESHOLD:.0%} NR/NA")
+        res.drop(columns=[c for c in nr_cols if c in res.columns], inplace=True)
+        ora.drop(columns=[c for c in nr_cols if c in ora.columns], inplace=True)
+    else:
+        print(f"       No columns exceed {NR_THRESHOLD:.0%} NR/NA")
+
+    print("[1e/11] Removing known mismatched (persona) columns ...")
+    to_drop = [c for c in EXCLUDED_COLS if c in ora.columns]
+    if to_drop:
+        print(f"       Dropping {len(to_drop)} columns with mismatched content: {to_drop}")
+        res.drop(columns=to_drop, inplace=True)
+        ora.drop(columns=to_drop, inplace=True)
+    else:
+        print(f"       No mismatched columns found")
+
+    # Snapshot pre-filter copies for NLP metrics (before agent-constant removal)
+    res_nlp = res.copy()
+    ora_nlp = ora.copy()
+    _, _, free_text_pre = classify_columns(res_nlp, ora_nlp)
+    nlp_all_cols = [c for c in res_nlp.columns if c in ora_nlp.columns]
+
+    print("[1f/11] Removing agent-constant (non-varying) columns ...")
+    agent_const = identify_agent_constant_columns(res, ora)
+    if agent_const:
+        print(f"       Dropping {len(agent_const)} columns where agent output does not vary")
+        res.drop(columns=[c for c in agent_const if c in res.columns], inplace=True)
+        ora.drop(columns=[c for c in agent_const if c in ora.columns], inplace=True)
+    else:
+        print(f"       All columns pass the agent-variability check")
+
+    print("[1g/11] Removing zero-overlap columns (agent/oracle code sets disjoint) ...")
+    zero_ov = identify_zero_overlap_columns(res, ora)
+    if zero_ov:
+        print(f"       Dropping {len(zero_ov)} columns where agent code space does not overlap oracle")
+        res.drop(columns=[c for c in zero_ov if c in res.columns], inplace=True)
+        ora.drop(columns=[c for c in zero_ov if c in ora.columns], inplace=True)
+    else:
+        print(f"       All columns pass the zero-overlap check")
+
+    print("[2/11] Auto-classifying columns ...")
+    numeric_cols, categorical_cols, free_text_cols = classify_columns(res, ora)
+
+    print(f"[2b/11] Selecting columns for entropy/KL (2-{CATEGORICAL_MAX_UNIQUE} oracle categories) ...")
+    entropy_kl_cols = select_entropy_kl_columns(res, ora)
+    print(f"       {len(entropy_kl_cols)} columns selected")
+
+    print("[3/11] Shannon Entropy ...")
+    entropy_df = compute_entropy_table(res, ora, entropy_kl_cols, max_cats=CATEGORICAL_MAX_UNIQUE)
+
+    print("[4/11] KL Divergence ...")
+    kl_df = compute_kl_table(res, ora, entropy_kl_cols, max_cats=CATEGORICAL_MAX_UNIQUE)
+
+    print("[5/11] Numeric comparison ...")
+    num_df = compute_numeric_table(res, ora, numeric_cols)
+
+    print("[6/11] BLEU (pre-filter free-text columns) ...")
+    bleu = compute_bleu(res_nlp, ora_nlp, free_text_pre)
+    print("[7/11] ROUGE (pre-filter free-text columns) ...")
+    rouge = compute_rouge(res_nlp, ora_nlp, free_text_pre)
+    print("[8/11] METEOR (pre-filter free-text columns) ...")
+    meteor = compute_meteor(res_nlp, ora_nlp, free_text_pre)
+    print(f"[9/11] BERTScore (all {len(nlp_all_cols)} pre-filter columns) ...")
+    bertscore = compute_bertscore(res_nlp, ora_nlp, nlp_all_cols)
+
+    print("[10/11] SR / TGC / Factual / Relevance ...")
+    sr = compute_sr(res)
+    tgc = compute_tgc(res, ora, categorical_cols, numeric_cols)
+    factual = compute_factual(res, ora, categorical_cols)
+    relevance = compute_relevance(res, ora, free_text_cols)
+
+    report_dir = out_dir / model / dataset
+    report_path = report_dir / "evaluation_report.txt"
+
+    print("[11/11] Assembling report ...")
+    summary_df = build_summary(
+        log_info, n, col_map,
+        categorical_cols, numeric_cols, free_text_cols,
+        entropy_df, kl_df, bleu, rouge, meteor, bertscore,
+        sr, tgc, factual, relevance,
+    )
+    nlp_df = build_nlp_table(bleu, rouge, meteor, bertscore)
+    factual_df = build_factual_table(factual)
+    relevance_df = build_relevance_table(relevance)
+
+    col_class_txt = (
+        f"Categorical      ({len(categorical_cols)}): {categorical_cols}\n"
+        f"Numeric          ({len(numeric_cols)}):     {numeric_cols}\n"
+        f"Free-text        ({len(free_text_cols)}):   {free_text_cols}\n"
+        f"Entropy/KL cols  ({len(entropy_kl_cols)}):  {entropy_kl_cols}\n"
+    )
+
+    header_txt = (
+        f"Model   : {model}\n"
+        f"Dataset : {dataset}\n"
+        f"Results : {Path(results_path).name}\n"
+        f"Oracle  : {Path(oracle_path).name}\n"
+        f"Log     : {Path(log_path).name if log_path else 'N/A'}\n"
+        f"{SEP2}"
+    )
+
+    write_report(str(report_path), [
+        ("HEADER", header_txt),
+        ("TABLE 0 — GLOBAL SUMMARY", tbl(summary_df)),
+        ("COLUMN CLASSIFICATION  (auto-inferred from data)", col_class_txt),
+        ("TABLE 1 — NORMALIZED SHANNON ENTROPY", tbl(entropy_df)),
+        ("TABLE 2 — KL DIVERGENCE  P(Oracle) || Q(Agent)", tbl(kl_df)),
+        ("TABLE 3 — NUMERIC VARIABLE COMPARISON", tbl(num_df)),
+        ("TABLE 4 — NLP METRICS PER FREE-TEXT FIELD\n"
+         "           BLEU / ROUGE / METEOR / BERTScore", tbl(nlp_df)),
+        ("TABLE 5 — SUCCESS RATE  (SR)", _kv(sr)),
+        ("TABLE 6 — TASK GOAL COMPLETION  (TGC)", _kv(tgc)),
+        ("TABLE 7 — FACTUAL CORRECTNESS  (exact norm. match)", tbl(factual_df)),
+        ("TABLE 8 — RESPONSE RELEVANCE  (TF-IDF cosine)", tbl(relevance_df)),
+    ])
+
+    print(f"\n  GLOBAL SUMMARY — {model} / {dataset}")
+    print(tbl(summary_df))
+
+    return {
+        "model": model,
+        "dataset": dataset,
+        "n_agents": n,
+        "n_matched_cols": len(col_map),
+        "n_categorical": len(categorical_cols),
+        "n_numeric": len(numeric_cols),
+        "n_free_text": len(free_text_cols),
+        "entropy_oracle_median": round(entropy_df["Entropy (Oracle)"].median(), 4) if not entropy_df.empty else 0,
+        "entropy_agent_median": round(entropy_df["Entropy (Agent)"].median(), 4) if not entropy_df.empty else 0,
+        "kl_median": round(kl_df["KL Divergence (Oracle || Agent)"].median(), 4) if not kl_df.empty else 0,
+        "bleu_global": bleu["global"],
+        "rouge1": rouge["global"]["ROUGE-1"],
+        "rouge2": rouge["global"]["ROUGE-2"],
+        "rougeL": rouge["global"]["ROUGE-L"],
+        "meteor": meteor["global"],
+        "bertscore_f1": bertscore["global"],
+        "success_rate": sr.get("Success Rate (SR)", 0),
+        "avg_field_coverage": sr.get("Avg Field Coverage", 0),
+        "tgc": tgc.get("Task Goal Completion (TGC)", 0),
+        "median_tgc": tgc.get("Median TGC", 0),
+        "factual_accuracy": factual["global_accuracy"],
+        "median_factual_accuracy": factual["median_accuracy"],
+        "relevance_mean": relevance["global_mean"],
+        "relevance_median": relevance["global_median"],
+        "report_path": str(report_path),
+    }
+
+
 # ==============================================================================
 # MAIN
 # ==============================================================================
 
 def main():
-    global CATEGORICAL_MAX_UNIQUE, FREE_TEXT_MIN_UNIQUE
-    ap = argparse.ArgumentParser(description="Dynamic LLM Agent Evaluation Suite")
-    ap.add_argument("--results", default="/mnt/user-data/uploads/20260316_1143_results.csv")
-    ap.add_argument("--oracle",  default="/mnt/user-data/uploads/sampled_oracle.csv")
-    ap.add_argument("--log",     default="/mnt/user-data/uploads/log.txt")
-    ap.add_argument("--out",     default="/mnt/user-data/outputs/evaluation_report.txt")
+    global CATEGORICAL_MAX_UNIQUE, FREE_TEXT_MIN_UNIQUE, AGENT_VAR_MIN_UNIQUE
+    ap = argparse.ArgumentParser(description="Dynamic LLM Agent Evaluation Suite (multi-dataset)")
+
+    ap.add_argument("--results-dir", type=str, default=None,
+                    help="Auto-discover runs under this directory (default: results/)")
+    ap.add_argument("--out-dir", type=str, default="evaluations",
+                    help="Output directory for reports and summary (default: evaluations/)")
+    ap.add_argument("--dataset", type=str, default=None,
+                    help="Limit to a specific dataset (e.g. data_lyon_EDGT)")
+
+    ap.add_argument("--results", default="",
+                    help="Single-run: results CSV path")
+    ap.add_argument("--oracle", default="",
+                    help="Single-run: oracle CSV path")
+    ap.add_argument("--log", default="",
+                    help="Single-run: log file path")
+    ap.add_argument("--out", default="",
+                    help="Single-run: output report path")
+
     ap.add_argument("--cat-max-unique", type=int, default=CATEGORICAL_MAX_UNIQUE,
                     help=f"Max distinct values to treat a column as categorical (default {CATEGORICAL_MAX_UNIQUE})")
     ap.add_argument("--free-text-min-unique", type=int, default=FREE_TEXT_MIN_UNIQUE,
                     help=f"Min distinct values needed to treat a column as free-text (default {FREE_TEXT_MIN_UNIQUE})")
+    ap.add_argument("--nr-threshold", type=float, default=0.9,
+                    help="Drop columns where oracle NR/NA rate exceeds this (default 0.9)")
+    ap.add_argument("--agent-var-min-unique", type=int, default=AGENT_VAR_MIN_UNIQUE,
+                    help=f"Min unique values for agent output to keep column (default {AGENT_VAR_MIN_UNIQUE})")
     args = ap.parse_args()
 
     CATEGORICAL_MAX_UNIQUE = args.cat_max_unique
-    FREE_TEXT_MIN_UNIQUE   = args.free_text_min_unique
+    FREE_TEXT_MIN_UNIQUE = args.free_text_min_unique
+    NR_THRESHOLD = args.nr_threshold
+    AGENT_VAR_MIN_UNIQUE = args.agent_var_min_unique
 
     print(f"\n{SEP}")
-    print("  LLM TRANSPORTATION AGENT — DYNAMIC EVALUATION SUITE")
+    print("  LLM TRANSPORTATION AGENT — DYNAMIC EVALUATION SUITE (multi-dataset)")
     print(SEP)
 
-    # 1. Load & map
-    print("[1/11] Loading and mapping columns ...")
-    res, ora, col_map, meta_cols, n = load_and_map(args.results, args.oracle)
-    log_info = load_log(args.log)
+    out_base = Path(args.out_dir)
+    out_base.mkdir(parents=True, exist_ok=True)
+
+    # ── Batch mode ──────────────────────────────────────────────────────
+    if args.results_dir:
+        runs = discover_runs(args.results_dir, target_dataset=args.dataset)
+        if not runs:
+            ds = f" for '{args.dataset}'" if args.dataset else ""
+            sys.exit(f"[ERROR] No evaluation runs found{ds} under {args.results_dir}/")
+
+        # Group by dataset
+        datasets_seen = sorted(set(r["dataset"] for r in runs))
+        print(f"\n  Discovered {len(runs)} evaluation run(s) across {len(datasets_seen)} dataset(s):")
+        for ds in datasets_seen:
+            models_ds = [r["model"] for r in runs if r["dataset"] == ds]
+            print(f"    {ds} ({len(models_ds)} models): {', '.join(models_ds)}")
+        print()
+
+        all_results = []
+        for run_info in runs:
+            try:
+                result = run_single_evaluation(run_info, out_base)
+                all_results.append(result)
+            except Exception as e:
+                model = run_info["model"]
+                dataset = run_info["dataset"]
+                print(f"\n  [ERROR] Evaluation failed for {model}/{dataset}: {e}")
+                import traceback; traceback.print_exc()
+                all_results.append({
+                    "model": model,
+                    "dataset": dataset,
+                    "error": str(e),
+                })
+
+        # Build per-dataset summary CSVs
+        for ds in datasets_seen:
+            ds_results = [r for r in all_results if r.get("dataset") == ds]
+            if not ds_results:
+                continue
+            summary_rows = []
+            for r in ds_results:
+                row = {k: r.get(k, "") for k in [
+                    "model", "dataset", "n_agents", "n_matched_cols",
+                    "n_categorical", "n_numeric", "n_free_text",
+                    "entropy_oracle_median", "entropy_agent_median",
+                    "kl_median", "bleu_global", "rouge1", "rouge2", "rougeL",
+                    "meteor", "bertscore_f1", "success_rate", "avg_field_coverage",
+                    "tgc", "median_tgc", "factual_accuracy", "median_factual_accuracy",
+                    "relevance_mean", "relevance_median", "report_path",
+                ]}
+                if "error" in r:
+                    row["error"] = r["error"]
+                summary_rows.append(row)
+
+            summary_csv = out_base / f"summary_{ds}.csv"
+            pd.DataFrame(summary_rows).to_csv(summary_csv, index=False)
+            print(f"\n  Global summary saved: {summary_csv}")
+
+            # Console comparison table
+            print(f"\n{'='*60}")
+            print(f"  GLOBAL COMPARISON  ({ds})")
+            print(f"{'='*60}")
+            comp_cols = ["model", "dataset", "n_agents", "success_rate", "tgc",
+                         "factual_accuracy", "bleu_global", "rougeL", "meteor", "bertscore_f1"]
+            comp_df = pd.DataFrame(summary_rows)[comp_cols]
+            print(tbl(comp_df))
+        return
+
+    # ── Single-run mode (backward compatible) ──────────────────────────
+    if not args.results or not args.oracle:
+        sys.exit("[ERROR] Either --results-dir (batch) or --results + --oracle (single) required.")
+
+    # Infer dataset from results path for dictionary loading
+    results_path = args.results
+    oracle_path = args.oracle
+    log_path = args.log if args.log else ""
+    out_path = args.out if args.out else "evaluation_report.txt"
+
+    inferred_dataset = args.dataset
+    if not inferred_dataset:
+        for known_dataset in ["data_lyon_EDGT", "data_MyDailyTravelData", "data_NYC_mobility",
+                               "data_VTC_survey", "data_pmus_yaounde", "data_hanoi"]:
+            if known_dataset in results_path:
+                inferred_dataset = known_dataset
+                break
+    if not inferred_dataset:
+        inferred_dataset = "data_MyDailyTravelData"
+    _load_dataset_dictionary(inferred_dataset)
+
+    print(f"\n[1/11] Loading and mapping columns ...")
+    res, ora, col_map, meta_cols, n = load_and_map(results_path, oracle_path)
+    log_info = load_log(log_path)
     print(f"       {n} rows  |  {len(col_map)} shared cols  |  "
           f"excluded metadata: {meta_cols}")
 
-    # 2. Classify
+    print("[1b/11] Resolving code:label format in agent responses ...")
+    res, ora = resolve_code_label_format(res, ora)
+
+    print("[1c/11] Binarizing multi-select indicator columns ...")
+    binarized = binarize_flag_cols(res, ora)
+    if binarized:
+        print(f"       Binarized {len(binarized)} flag columns")
+
+    print("[1d/11] Identifying and removing NR/NA-heavy columns ...")
+    nr_cols = identify_nr_columns(ora, NR_THRESHOLD)
+    if nr_cols:
+        print(f"       Dropping {len(nr_cols)} columns with >{NR_THRESHOLD:.0%} NR/NA")
+        res.drop(columns=[c for c in nr_cols if c in res.columns], inplace=True)
+        ora.drop(columns=[c for c in nr_cols if c in ora.columns], inplace=True)
+    else:
+        print(f"       No columns exceed {NR_THRESHOLD:.0%} NR/NA")
+
+    print("[1e/11] Removing known mismatched (persona) columns ...")
+    to_drop = [c for c in EXCLUDED_COLS if c in ora.columns]
+    if to_drop:
+        print(f"       Dropping {len(to_drop)} columns with mismatched content: {to_drop}")
+        res.drop(columns=to_drop, inplace=True)
+        ora.drop(columns=to_drop, inplace=True)
+    else:
+        print(f"       No mismatched columns found")
+
     print("[2/11] Auto-classifying columns ...")
     numeric_cols, categorical_cols, free_text_cols = classify_columns(res, ora)
     print(f"       Categorical : {categorical_cols}")
     print(f"       Numeric     : {numeric_cols}")
     print(f"       Free-text   : {free_text_cols}")
 
-    # 3. Entropy
+    print("[2b/11] Selecting columns for entropy/KL (2-9 oracle categories) ...")
+    entropy_kl_cols = select_entropy_kl_columns(res, ora)
+    print(f"       Entropy/KL cols : {entropy_kl_cols}")
+
     print("[3/11] Shannon Entropy ...")
-    entropy_df = compute_entropy_table(res, ora, categorical_cols)
+    entropy_df = compute_entropy_table(res, ora, entropy_kl_cols)
 
-    # 4. KL Divergence
     print("[4/11] KL Divergence ...")
-    kl_df = compute_kl_table(res, ora, categorical_cols)
+    kl_df = compute_kl_table(res, ora, entropy_kl_cols)
 
-    # 5. Numeric
     print("[5/11] Numeric comparison ...")
     num_df = compute_numeric_table(res, ora, numeric_cols)
 
-    # 6-9. NLP
     print("[6/11] BLEU ...")
     bleu = compute_bleu(res, ora, free_text_cols)
     print("[7/11] ROUGE ...")
@@ -756,55 +1543,52 @@ def main():
     bertscore = compute_bertscore(res, ora, free_text_cols)
     print(f"       {bertscore['note']}")
 
-    # 10. Task / quality metrics
     print("[10/11] SR / TGC / Factual / Relevance ...")
-    sr        = compute_sr(res)
-    tgc       = compute_tgc(res, ora, categorical_cols, numeric_cols)
-    factual   = compute_factual(res, ora, categorical_cols)
+    sr = compute_sr(res)
+    tgc = compute_tgc(res, ora, categorical_cols, numeric_cols)
+    factual = compute_factual(res, ora, categorical_cols)
     relevance = compute_relevance(res, ora, free_text_cols)
 
-    # 11. Report
     print("[11/11] Assembling report ...")
-    summary_df   = build_summary(
+    summary_df = build_summary(
         log_info, n, col_map,
         categorical_cols, numeric_cols, free_text_cols,
         entropy_df, kl_df, bleu, rouge, meteor, bertscore,
         sr, tgc, factual, relevance,
     )
-    nlp_df       = build_nlp_table(bleu, rouge, meteor, bertscore)
-    factual_df   = build_factual_table(factual)
+    nlp_df = build_nlp_table(bleu, rouge, meteor, bertscore)
+    factual_df = build_factual_table(factual)
     relevance_df = build_relevance_table(relevance)
 
-
     col_class_txt = (
-        f"Categorical  ({len(categorical_cols)}): {categorical_cols}\n"
-        f"Numeric      ({len(numeric_cols)}):     {numeric_cols}\n"
-        f"Free-text    ({len(free_text_cols)}):   {free_text_cols}\n"
+        f"Categorical      ({len(categorical_cols)}): {categorical_cols}\n"
+        f"Numeric          ({len(numeric_cols)}):     {numeric_cols}\n"
+        f"Free-text        ({len(free_text_cols)}):   {free_text_cols}\n"
+        f"Entropy/KL cols  ({len(entropy_kl_cols)}):  {entropy_kl_cols}\n"
     )
 
     header_txt = (
-        f"Results : {Path(args.results).name}\n"
-        f"Oracle  : {Path(args.oracle).name}\n"
-        f"Log     : {Path(args.log).name}\n"
+        f"Results : {Path(results_path).name}\n"
+        f"Oracle  : {Path(oracle_path).name}\n"
+        f"Log     : {Path(log_path).name if log_path else 'N/A'}\n"
         f"{SEP2}"
     )
 
-    write_report(args.out, [
-        ("HEADER",                                              header_txt),
-        ("TABLE 0 — GLOBAL SUMMARY",                           tbl(summary_df)),
-        ("COLUMN CLASSIFICATION  (auto-inferred from data)",   col_class_txt),
-        ("TABLE 1 — NORMALIZED SHANNON ENTROPY",               tbl(entropy_df)),
-        ("TABLE 2 — KL DIVERGENCE  P(Oracle) || Q(Agent)",     tbl(kl_df)),
-        ("TABLE 3 — NUMERIC VARIABLE COMPARISON",              tbl(num_df)),
+    write_report(out_path, [
+        ("HEADER", header_txt),
+        ("TABLE 0 — GLOBAL SUMMARY", tbl(summary_df)),
+        ("COLUMN CLASSIFICATION  (auto-inferred from data)", col_class_txt),
+        ("TABLE 1 — NORMALIZED SHANNON ENTROPY", tbl(entropy_df)),
+        ("TABLE 2 — KL DIVERGENCE  P(Oracle) || Q(Agent)", tbl(kl_df)),
+        ("TABLE 3 — NUMERIC VARIABLE COMPARISON", tbl(num_df)),
         ("TABLE 4 — NLP METRICS PER FREE-TEXT FIELD\n"
-         "           BLEU / ROUGE / METEOR / BERTScore",        tbl(nlp_df)),
-        ("TABLE 5 — SUCCESS RATE  (SR)",                       _kv(sr)),
-        ("TABLE 6 — TASK GOAL COMPLETION  (TGC)",              _kv(tgc)),
+         "           BLEU / ROUGE / METEOR / BERTScore", tbl(nlp_df)),
+        ("TABLE 5 — SUCCESS RATE  (SR)", _kv(sr)),
+        ("TABLE 6 — TASK GOAL COMPLETION  (TGC)", _kv(tgc)),
         ("TABLE 7 — FACTUAL CORRECTNESS  (exact norm. match)", tbl(factual_df)),
-        ("TABLE 8 — RESPONSE RELEVANCE  (TF-IDF cosine)",      tbl(relevance_df)),
+        ("TABLE 8 — RESPONSE RELEVANCE  (TF-IDF cosine)", tbl(relevance_df)),
     ])
 
-    # Console summary
     print(f"\n{SEP}")
     print("  GLOBAL SUMMARY")
     print(SEP)

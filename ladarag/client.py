@@ -9,6 +9,8 @@ from .db.registry import ServiceRegistry
 from .db.gateway import ServiceGateway
 from .core.controlService import Controller
 from .core.designerService import Designer
+from .valhalla import ValhallaManager
+from .map_context import MapContext
 
 
 # Minimal OD classification prompt: asks the LLM whether a question is
@@ -72,6 +74,8 @@ class LADARAG:
         self._lock = threading.Lock()
         self._controller: Optional[Controller] = None
         self._gateway: Optional[ServiceGateway] = None
+        self._valhalla: Optional[ValhallaManager] = None
+        self._map_context: Optional[MapContext] = None
         self._initialized = False
 
         if config.enabled:
@@ -112,7 +116,24 @@ class LADARAG:
         self._controller = controller
         self._storage = storage
         self._registry = registry
+
+        if self._config.valhalla.enabled:
+            self._valhalla = ValhallaManager(
+                tile_dir=self._config.valhalla.tile_dir,
+                costing=self._config.valhalla.costing,
+            )
+
+        self._map_context = None
+
         self._initialized = True
+
+    @property
+    def valhalla(self) -> Optional[ValhallaManager]:
+        return self._valhalla
+
+    @property
+    def map_context(self) -> Optional[MapContext]:
+        return self._map_context
 
     def is_enabled(self) -> bool:
         return self._config.enabled and self._initialized
@@ -217,3 +238,96 @@ class LADARAG:
             f"Route notes: {result.get('route_notes', 'N/A')}",
         ]
         return "\n".join(parts)
+
+    def load_map(self, data_dir: str, dataset_name: Optional[str] = None) -> bool:
+        """Build/load Valhalla graph and POI index from OSM PBF files in data_dir.
+
+        Returns True if graph was built successfully, False otherwise.
+        No-op if Valhalla is not enabled.
+        """
+        ds_name = dataset_name or data_dir.split("/")[-1]
+
+        if self._config.map_context.enabled:
+            self._map_context = MapContext(
+                dataset_name=ds_name,
+                data_dir=data_dir,
+                cache_dir=self._config.map_context.cache_dir,
+                default_radius_m=self._config.map_context.default_radius_m,
+                default_knn=self._config.map_context.default_knn,
+            )
+            try:
+                self._map_context.initialize()
+            except Exception as e:
+                print(f"[LADARAG] map_context init error: {e}")
+                self._map_context = None
+
+        if self._valhalla is None:
+            return self._map_context is not None and self._map_context.is_ready if self._map_context else False
+        try:
+            return self._valhalla.build_graph(data_dir)
+        except Exception as e:
+            print(f"[LADARAG] load_map error: {e}")
+            return False
+
+    def query_route(
+        self,
+        origin: tuple[float, float],
+        destination: tuple[float, float],
+        costing: Optional[str] = None,
+    ) -> dict:
+        """Compute a route using in-process Valhalla.
+
+        Returns empty dict if Valhalla is not available.
+        """
+        if self._valhalla is None or not self._valhalla.is_ready:
+            return {}
+        try:
+            return self._valhalla.route(origin, destination, costing=costing)
+        except Exception as e:
+            print(f"[LADARAG] query_route error: {e}")
+            return {}
+
+    def query_poi_context(
+        self,
+        lat: float,
+        lon: float,
+        question_text: str = "",
+        question_desc: str = "",
+        radius_m: Optional[float] = None,
+    ) -> str:
+        """Get dynamic POI context for a location and question.
+
+        Returns empty string if MapContext is not available.
+        """
+        if self._map_context is None or not self._map_context.is_ready:
+            return ""
+        try:
+            return self._map_context.get_poi_context(
+                lat, lon, question_text, question_desc, radius_m,
+            )
+        except Exception as e:
+            print(f"[LADARAG] query_poi_context error: {e}")
+            return ""
+
+    def query_accessibility(
+        self,
+        lat: float,
+        lon: float,
+        radius_m: Optional[float] = None,
+    ) -> str:
+        """Get accessibility summary for a location.
+
+        Returns empty string if MapContext is not available.
+        """
+        if self._map_context is None or not self._map_context.is_ready:
+            return ""
+        try:
+            return self._map_context.get_accessibility_summary(lat, lon, radius_m)
+        except Exception as e:
+            print(f"[LADARAG] query_accessibility error: {e}")
+            return ""
+
+    def shutdown(self):
+        """Clean up Valhalla resources."""
+        if self._valhalla is not None:
+            self._valhalla.cleanup()

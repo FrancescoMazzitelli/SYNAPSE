@@ -1,0 +1,250 @@
+
+================================================================================
+HEADER
+================================================================================
+Model   : llama3.1:8b
+Dataset : data_hanoi
+Results : 20260601_0905_results.csv
+Oracle  : sampled_oracle.csv
+Log     : log.txt
+--------------------------------------------------------------------------------
+
+================================================================================
+TABLE 0 — GLOBAL SUMMARY
+================================================================================
+Category         Metric                      Value
+---------------  --------------------------  ----------------------------
+Run Info         Model                       ollama/llama3.1:8b
+Run Info         Temperature                 0.2
+Run Info         N Agents                    200
+Run Info         Duration (h)                1.36
+Run Info         Start Time                  2026-06-01 09:05:46
+Run Info         End Time                    2026-06-01 10:27:26
+Run Info         Sample Size                 200
+Run Info         Batch Size                  10
+Run Info         Source                      GENERIC
+Run Info         Sim Year                    2019
+Columns          Matched (results<->oracle)  53
+Columns          -> Categorical              17
+Columns          -> Numeric                  11
+Columns          -> Free-text                0
+------------     ----------------------      ----------------------------
+Entropy          Oracle Median               0.8372
+Entropy          Agent Median                0.6454
+Entropy          Agent Mean                  0.6258
+KL Divergence    Median KL                   0.5251
+KL Divergence    Mean KL                     1.5381
+------------     ----------------------      ----------------------------
+NLP - BLEU       Corpus BLEU                 0
+NLP - ROUGE      ROUGE-1                     0.0585
+NLP - ROUGE      ROUGE-2                     0.0148
+NLP - ROUGE      ROUGE-L                     0.0555
+NLP - METEOR     METEOR                      0.0
+NLP - BERTScore  F1                          0.9154
+------------     ----------------------      ----------------------------
+Task Metrics     Success Rate (SR)           1.0
+Task Metrics     N Successful / N Total      200 / 200
+Task Metrics     Avg Field Coverage          1.0
+Task Metrics     Task Goal Completion        0.5511
+Task Metrics     Median TGC                  0.5556
+------------     ----------------------      ----------------------------
+Factual          Global Accuracy             0.5079
+Factual          Median Accuracy             0.44
+Relevance        Global Mean (TF-IDF)        0.0
+Relevance        Global Median (TF-IDF)      0.0
+
+================================================================================
+COLUMN CLASSIFICATION  (auto-inferred from data)
+================================================================================
+Categorical      (17): ['occup', 'gender', 'purp', 'vehic', 'freqpweek', 'reason', 'type', 'status', 'aware_ban', 'fut_veh', 'opinion_car', 'opinion_motob', 'opinion_ebike', 'opinion_bike', 'opinion_taxi', 'opinion_bus', 'opinion_ban']
+Numeric          (11):     ['own_car', 'own_motob', 'own_ebike', 'own_bike', 'alt_car', 'alt_ebike', 'alt_bike', 'alt_bus', 'alt_ltrain', 'alt_taxi', 'alt_walk']
+Free-text        (0):   []
+Entropy/KL cols  (28):  ['occup', 'gender', 'purp', 'vehic', 'freqpweek', 'reason', 'own_car', 'own_motob', 'own_ebike', 'own_bike', 'type', 'status', 'aware_ban', 'fut_veh', 'alt_car', 'alt_ebike', 'alt_bike', 'alt_bus', 'alt_ltrain', 'alt_taxi', 'alt_walk', 'opinion_car', 'opinion_motob', 'opinion_ebike', 'opinion_bike', 'opinion_taxi', 'opinion_bus', 'opinion_ban']
+
+
+================================================================================
+TABLE 1 — NORMALIZED SHANNON ENTROPY
+================================================================================
+Variable         # Categories    Entropy (Oracle)    Entropy (Agent)    Delta Entropy
+-------------  --------------  ------------------  -----------------  ---------------
+occup                       5              0.8358             0.8192          -0.0167
+gender                      2              0.795              0.9913           0.1962
+purp                        6              0.9837             0.9733          -0.0104
+vehic                       8              0.8824             0.803           -0.0794
+freqpweek                   7              0.8605             0.8962           0.0357
+reason                     14              0.8225             0.74            -0.0825
+own_car                     6              0.7369             0.6444          -0.0925
+own_motob                   6              0.9533             0.9608           0.0075
+own_ebike                   6              0.8668             0.8231          -0.0436
+own_bike                    6              0.8773             0.8839           0.0066
+type                        6              0.6895             0.537           -0.1525
+status                      3              0.4853             0.3358          -0.1494
+aware_ban                   3              0.8718             0.6454          -0.2264
+fut_veh                     5              0.7746             0.8006           0.026
+alt_ebike                   2              0.968              0.9149          -0.053
+alt_bike                    2              0.9988             0.4529          -0.5459
+alt_ltrain                  2              0.7602             0.3274          -0.4327
+alt_walk                    2              0.9982             0.3659          -0.6323
+opinion_car                 5              0.9065             0.5214          -0.3851
+opinion_motob               5              0.8372             0.2057          -0.6315
+opinion_ebike               5              0.6939             0.1336          -0.5603
+opinion_bike                5              0.8348             0.1217          -0.7131
+opinion_taxi                5              0.6833             0.4978          -0.1855
+opinion_bus                 5              0.6444             0.6614           0.017
+opinion_ban                 5              0.8566             0.5895          -0.2671
+
+================================================================================
+TABLE 2 — KL DIVERGENCE  P(Oracle) || Q(Agent)
+================================================================================
+Variable         KL Divergence (Oracle || Agent)  Rating
+-------------  ---------------------------------  --------------
+occup                                     0.0215  approx_perfect
+gender                                    0.0907  good
+purp                                      0.0529  good
+vehic                                     4.3918  poor
+freqpweek                                 0.3454  good
+reason                                    3.4045  poor
+own_car                                   0.0527  good
+own_motob                                 0.2108  good
+own_ebike                                 0.0556  good
+own_bike                                  0.7451  moderate
+type                                      0.1442  good
+status                                    0.0267  approx_perfect
+aware_ban                                 0.488   good
+fut_veh                                   1.0844  moderate
+alt_ebike                                 0.0093  approx_perfect
+alt_bike                                  0.5796  moderate
+alt_ltrain                                0.1403  good
+alt_walk                                  0.6094  moderate
+opinion_car                               4.1811  poor
+opinion_motob                             1.3713  moderate
+opinion_ebike                             9.1727  poor
+opinion_bike                              5.6082  poor
+opinion_taxi                              2.0189  poor
+opinion_bus                               3.1235  poor
+opinion_ban                               0.5251  moderate
+
+================================================================================
+TABLE 3 — NUMERIC VARIABLE COMPARISON
+================================================================================
+Variable      Oracle Mean    Agent Mean    Oracle Median    Agent Median    Oracle Std    Agent Std    MAE
+----------  -------------  ------------  ---------------  --------------  ------------  -----------  -----
+own_car              0.87          0.72                0               0          1.17         1.18  0.212
+own_motob            2.48          2.11                3               2          1.29         1.45  0.371
+own_ebike            1.3           1.32                1               1          1.21         1.17  0.222
+own_bike             2.2           1.54                2               2          1.12         1.34  0.625
+alt_car              0.39          0                   0               0          0.49         0     0.39
+alt_ebike            0.4           0.33                0               0          0.49         0.47  0.425
+alt_bike             0.52          0.1                 1               0          0.5          0.29  0.515
+alt_bus              0.18          0                   0               0          0.39         0     0.185
+alt_ltrain           0.22          0.06                0               0          0.42         0.24  0.27
+alt_taxi             0.26          0                   0               0          0.44         0     0.26
+alt_walk             0.48          0.07                0               0          0.5          0.26  0.485
+
+================================================================================
+TABLE 4 — NLP METRICS PER FREE-TEXT FIELD
+           BLEU / ROUGE / METEOR / BERTScore
+================================================================================
+Field           BLEU    ROUGE-1    ROUGE-2    ROUGE-L    METEOR      BERTScore F1
+--------------  ------  ---------  ---------  ---------  --------  --------------
+age             —       —          —          —          —                 0.8406
+alt_bike        —       —          —          —          —                 0.93
+alt_bus         —       —          —          —          —                 0.9748
+alt_car         —       —          —          —          —                 0.947
+alt_ebike       —       —          —          —          —                 0.9422
+alt_ltrain      —       —          —          —          —                 0.9633
+alt_taxi        —       —          —          —          —                 0.9646
+alt_veh         0       0.4677     0.1182     0.4439     0.0               0.8297
+alt_walk        —       —          —          —          —                 0.934
+aware_ban       —       —          —          —          —                 0.9361
+bank_acc        —       —          —          —          —                 0.951
+destlat         0       0.0        0.0        0.0        0.0               0.8114
+destlon         0       0.0        0.0        0.0        0.0               0.8083
+dist_to_pub     0       0.0        0.0        0.0        0.0               0.8066
+freq_bike       —       —          —          —          —                 0.8651
+freq_car        —       —          —          —          —                 0.8712
+freq_ebike      —       —          —          —          —                 0.8493
+freq_motob      —       —          —          —          —                 0.8607
+freqpweek       —       —          —          —          —                 0.994
+fut_veh         —       —          —          —          —                 0.8855
+gender          —       —          —          —          —                 0.9881
+hosp_acc        —       —          —          —          —                 0.9602
+leis_acc        —       —          —          —          —                 0.9741
+market_acc      —       —          —          —          —                 0.9679
+occup           —       —          —          —          —                 0.9942
+od_dist         0       0.0        0.0        0.0        0.0               0.8017
+opinion_ban     —       —          —          —          —                 0.931
+opinion_bike    —       —          —          —          —                 0.9618
+opinion_bus     —       —          —          —          —                 0.9382
+opinion_car     —       —          —          —          —                 0.9562
+opinion_ebike   —       —          —          —          —                 0.9502
+opinion_motob   —       —          —          —          —                 0.9663
+opinion_taxi    —       —          —          —          —                 0.9452
+origlat         0       0.0        0.0        0.0        0.0               0.8121
+origlon         0       0.0        0.0        0.0        0.0               0.8081
+own             —       —          —          —          —                 0.9355
+own_bike        —       —          —          —          —                 0.9601
+own_car         —       —          —          —          —                 0.98
+own_ebike       —       —          —          —          —                 0.9768
+own_motob       —       —          —          —          —                 0.964
+purp            —       —          —          —          —                 0.9823
+reas_not_bike   —       —          —          —          —                 0.8305
+reas_not_car    —       —          —          —          —                 0.8378
+reas_not_ebike  —       —          —          —          —                 0.8202
+reas_not_motob  —       —          —          —          —                 0.8233
+reason          —       —          —          —          —                 0.9242
+school_acc      —       —          —          —          —                 0.964
+status          —       —          —          —          —                 0.9682
+travtime        0       0.0        0.0        0.0        0.0               0.8038
+type            —       —          —          —          —                 0.9576
+vehic           —       —          —          —          —                 0.9667
+
+================================================================================
+TABLE 5 — SUCCESS RATE  (SR)
+================================================================================
+  Success Rate (SR)                        1.0
+  SR Threshold                             0.7
+  N Agents                                 200
+  N Successful                             200
+  Avg Field Coverage                       1.0
+  Min Field Coverage                       1.0
+  Max Field Coverage                       1.0
+
+================================================================================
+TABLE 6 — TASK GOAL COMPLETION  (TGC)
+================================================================================
+  Task Goal Completion (TGC)               0.5511
+  Median TGC                               0.5556
+  Std TGC                                  0.0965
+  Min TGC                                  0.3111
+  Max TGC                                  0.7778
+  Cols evaluated                           28
+  Total weight                             22.5
+
+================================================================================
+TABLE 7 — FACTUAL CORRECTNESS  (exact norm. match)
+================================================================================
+Field            Accuracy    N (oracle)
+-------------  ----------  ------------
+occup               0.95            200
+freqpweek           0.905           200
+purp                0.86            200
+reason              0.85            200
+status              0.77            200
+vehic               0.7             200
+gender              0.515           200
+type                0.455           200
+opinion_motob       0.44            200
+opinion_bike        0.41            200
+aware_ban           0.33            200
+opinion_ebike       0.325           200
+opinion_car         0.3             200
+opinion_ban         0.3             200
+opinion_taxi        0.235           200
+fut_veh             0.155           200
+opinion_bus         0.135           200
+
+================================================================================
+TABLE 8 — RESPONSE RELEVANCE  (TF-IDF cosine)
+================================================================================
+(no data)

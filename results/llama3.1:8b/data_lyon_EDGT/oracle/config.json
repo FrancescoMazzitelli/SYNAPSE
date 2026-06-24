@@ -1,0 +1,68 @@
+{
+    "model": {
+        "chat_model": "ollama/llama3.1:8b",
+        "chat_context_length": 32000,
+        "temperature": 0.2,
+        "timeout": 99999
+    },
+    "synthesis": {
+        "sample_size": 200,
+        "subsample": 200,
+        "batch_size": 10,
+        "source": "GENERIC",
+        "read_from_dataset": true,
+        "sim_year": 2019,
+        "system_message_header": "Please assume the identity provided:\n\n",
+        "system_message_footer": "\n\nNow please answer some questions to accurately show your personality! Your speaking style should fully imitate the personality assigned to you! Please do no expose that you are an artificial intellience model or language model, you must always remember you are only assigned one personality role. When questioned on information not explicitly given to you, please generate a response based on the description assigned to you and your previous responses.",
+        "bio_model": "gpt-oss:20b",
+        "shuffle_response": false,
+        "shuffle_prompt": false,
+        "wrap": 80
+    },
+    "survey": {
+        "dtype_tools": {
+            "NUMERIC": ["discreteNumericResponse"],
+            "TEXT": ["singleAnswerResponse", "multipleAnswerResponse", "textResponse"]
+        }
+    },
+    "analysis": {
+        "categorical_variables": [],
+        "continuous_variables": [],
+        "multiple_choice": [],
+        "exclude": []
+    },
+    "ladarag": {
+        "enabled": false,
+        "ollama_url": "http://localhost:11434",
+        "model": "phi4-reasoning:14b",
+        "timeout": 120,
+        "services": {
+            "valhalla-routing": {
+                "name": "Valhalla Routing Service",
+                "description": "REST API for origin-destination routing using the Valhalla routing engine. Provides turn-by-turn directions, distance, duration, and geometry for routes between locations. Supports multiple costing models (auto, bicycle, pedestrian, transit) and can avoid features like tolls, ferries, and highways.",
+                "url": "http://localhost:8002",
+                "endpoints": {
+                    "GET /route": {
+                        "path": "/route",
+                        "capability": "Calculate the optimal route between an origin and destination. Returns trip distance, duration, legs, and geometry. Parameters include locations (comma-separated lat,lng pairs), costing model, and optional avoid_features.",
+                        "parameters": "locations(string*), costing(string), directions_options(string), avoid_locations(string), date_time(string)",
+                        "response_schema": "{trip:obj, legs:arr, distance:float, duration:float, geometry:str, locations:arr}"
+                    }
+                }
+            },
+            "valhalla-roadblocks": {
+                "name": "Valhalla Roadblock-Aware Routing",
+                "description": "REST API for origin-destination routing that accounts for roadblocks, road closures, and construction zones. Returns routes that avoid blocked roads and provides alternative paths. Particularly useful for comparing standard routing vs roadblock-mitigated routing.",
+                "url": "http://localhost:8003",
+                "endpoints": {
+                    "GET /route": {
+                        "path": "/route",
+                        "capability": "Calculate a route between origin and destination that avoids known roadblocks and closures. Returns trip distance, duration, legs, geometry, and the number of roadblocks avoided.",
+                        "parameters": "locations(string*), costing(string), exclude_polygons(string), directions_options(string)",
+                        "response_schema": "{trip:obj, legs:arr, distance:float, duration:float, geometry:str, roadblocks_avoided:int}"
+                    }
+                }
+            }
+        }
+    }
+}

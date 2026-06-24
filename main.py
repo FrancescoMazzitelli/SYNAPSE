@@ -125,7 +125,15 @@ def main_gp(survey_path, dict_path):
         full_config = json_module.load(f)
     ladarag_engine = LADARAG(LADARAGConfig(full_config.get("ladarag", {})))
     if ladarag_engine.is_enabled():
-        print(f"  LADARAG enabled with {len(ladarag_engine.catalog.get_all())} service(s)")
+        print(f"  LADARAG enabled with {len(ladarag_engine._storage.list_all())} service(s)")
+
+        dataset_dir = os.path.dirname(survey_path)
+        if ladarag_engine.valhalla is not None:
+            print(f"  Loading Valhalla map from: {dataset_dir}")
+            if ladarag_engine.load_map(dataset_dir):
+                print(f"  Valhalla ready (map: {ladarag_engine.valhalla.current_map})")
+            else:
+                print("  Valhalla map not loaded (no .osm.pbf files found)")
     else:
         print("  LADARAG disabled (set 'ladarag.enabled: true' in config.json to enable)")
 

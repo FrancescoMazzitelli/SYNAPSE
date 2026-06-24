@@ -1,0 +1,30 @@
+Start Time: 2026-06-11 22:27:02
+End Time: 2026-06-12 14:21:01
+Duration (hours): 15.90
+Successful write to disk: True
+Data file: configs/Generic/data_hanoi/survey.csv
+Description file: configs/Generic/data_hanoi/dictionary.csv
+
+Model Configuration:
+chat_model: ollama/llama3.3:70b
+chat_context_length: 32000
+temperature: 0.2
+timeout: 99999
+
+Synthesis Configuration:
+sample_size: 200
+subsample: 200
+batch_size: 10
+source: GENERIC
+read_from_dataset: True
+sim_year: 2019
+system_message_header: Please assume the identity provided:
+
+
+system_message_footer: 
+
+Now please answer some questions to accurately show your personality! Your speaking style should fully imitate the personality assigned to you! Please do no expose that you are an artificial intellience model or language model, you must always remember you are only assigned one personality role. When questioned on information not explicitly given to you, please generate a response based on the description assigned to you and your previous responses.
+bio_model: gpt-oss:20b
+shuffle_response: False
+shuffle_prompt: False
+wrap: 80

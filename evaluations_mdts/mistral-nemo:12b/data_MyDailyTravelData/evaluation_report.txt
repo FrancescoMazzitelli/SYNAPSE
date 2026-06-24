@@ -1,0 +1,476 @@
+
+================================================================================
+HEADER
+================================================================================
+Model   : mistral-nemo:12b
+Dataset : data_MyDailyTravelData
+Results : 20260618_1917_results.csv
+Oracle  : sampled_oracle.csv
+Log     : log.txt
+--------------------------------------------------------------------------------
+
+================================================================================
+TABLE 0 — GLOBAL SUMMARY
+================================================================================
+Category         Metric                      Value
+---------------  --------------------------  ----------------------------
+Run Info         Model                       ollama/mistral-nemo:12b
+Run Info         Temperature                 0.2
+Run Info         N Agents                    200
+Run Info         Duration (h)                6.77
+Run Info         Start Time                  2026-06-18 19:17:28
+Run Info         End Time                    2026-06-19 02:03:26
+Run Info         Sample Size                 200
+Run Info         Batch Size                  10
+Run Info         Source                      GENERIC
+Run Info         Sim Year                    2019
+Columns          Matched (results<->oracle)  181
+Columns          -> Categorical              93
+Columns          -> Numeric                  69
+Columns          -> Free-text                1
+------------     ----------------------      ----------------------------
+Entropy          Oracle Median               0.6765
+Entropy          Agent Median                0.7041
+Entropy          Agent Mean                  0.6474
+KL Divergence    Median KL                   12.5361
+KL Divergence    Mean KL                     9.6006
+------------     ----------------------      ----------------------------
+NLP - BLEU       Corpus BLEU                 0.0043
+NLP - ROUGE      ROUGE-1                     0.5676
+NLP - ROUGE      ROUGE-2                     0.0
+NLP - ROUGE      ROUGE-L                     0.5676
+NLP - METEOR     METEOR                      0.2373
+NLP - BERTScore  F1                          0.951
+------------     ----------------------      ----------------------------
+Task Metrics     Success Rate (SR)           1.0
+Task Metrics     N Successful / N Total      200 / 200
+Task Metrics     Avg Field Coverage          0.9689
+Task Metrics     Task Goal Completion        0.1699
+Task Metrics     Median TGC                  0.1943
+------------     ----------------------      ----------------------------
+Factual          Global Accuracy             0.2466
+Factual          Median Accuracy             0.01
+Relevance        Global Mean (TF-IDF)        0.4072
+Relevance        Global Median (TF-IDF)      0.2947
+
+================================================================================
+COLUMN CLASSIFICATION  (auto-inferred from data)
+================================================================================
+Categorical      (93): ['source', 'cravl', 'fare', 'payf', 'pkbas_o', 'prkty', 'prkty_o', 'tpurp2_o', 'tpurp_check', 'trip_appt', 'trip_appt_why2_o', 'placegroup', 'time_distance_flag', 'age18', 'hisp_o', 'race_o', 'jobs', 'wkstat', 'wkstat_o', 'wplace', 'wmode', 'wmode_o', 'pervh', 'wrkhrs', 'wtrav', 'occup', 'occup_o', 'indus', 'indus_o', 'emply_transit', 'emply_transit_o', 'emply_park', 'emply_park_o', 'schol', 'schol_o', 'sweb', 'smode', 'smode_o', 'educ_o', 'hptol_o', 'pay_allday', 'tolls', 'tolltrip', 'carptowk', 'walktowk', 'biketowk', 'ribus', 'tcoff', 'tcdays', 'compr', 'compr_o', 'wkflex', 'tnc_use', 'tnc_cost', 'tnc_purp', 'dtype_o', 'dtype2', 'traveldatause', 'traveldatadevice', 'traveldatadevice_o', 'traveldatamode', 'traveldatamode_o', 'dtype_3', 'dtype_4', 'dtype_5', 'dtype_6', 'dtype_se', 'dtype_rf', 'dtype_dk', 'pertrips', 'hhveh', 'transprob', 'transprob_o', 'restylast', 'restylast_o', 'restylast_zip', 'hhinc2', 'homeown_o', 'resty_o', 'hhinc', 'vehyear', 'make', 'make_o', 'model', 'model_o', 'body', 'body_o', 'fuel', 'fuel_o', 'transp', 'parkd', 'parkd_o', 'removed_places']
+Numeric          (69):     ['pkamt', 'tpurp', 'tpurp2', 'trip_appt_why_1', 'trip_appt_why_2', 'trip_appt_why_3', 'trip_appt_why_4', 'trip_appt_why_5', 'trip_appt_why_6', 'trip_appt_why_se', 'trip_appt_why_rf', 'trip_appt_why_dk', 'trip_appt_why2_1', 'trip_appt_why2_2', 'trip_appt_why2_3', 'trip_appt_why2_4', 'trip_appt_why2_5', 'trip_appt_why2_se', 'trip_appt_why2_rf', 'trip_appt_why2_dk', 'retmode_final', 'retmode', 'age', 'sex', 'relate', 'lic', 'hisp', 'race', 'smrtphn', 'emply_ask', 'volun_freq', 'wparkride', 'stude', 'sloc', 'sparkride', 'educ', 'typpl', 'tnc_typ', 'disab', 'nogowhy2_1', 'nogowhy2_2', 'nogowhy2_3', 'nogowhy2_4', 'nogowhy2_5', 'nogowhy2_rf', 'nogowhy2_dk', 'traveldatadevice_1', 'traveldatadevice_2', 'traveldatadevice_3', 'traveldatadevice_se', 'traveldatadevice_rf', 'traveldatadevice_dk', 'traveldatamode_1', 'traveldatamode_2', 'traveldatamode_3', 'traveldatamode_4', 'traveldatamode_5', 'traveldatamode_se', 'traveldatamode_rf', 'traveldatamode_dk', 'dtype_1', 'dtype_2', 'hlive', 'homeown', 'futuresurvey', 'incendonate', 'resty', 'download', 'phase']
+Free-text        (1):   ['dtype']
+Entropy/KL cols  (117):  ['source', 'cravl', 'fare', 'payf', 'pkamt', 'prkty', 'tpurp2', 'tpurp2_o', 'tpurp_check', 'trip_appt', 'trip_appt_why_6', 'trip_appt_why_se', 'trip_appt_why2_1', 'trip_appt_why2_4', 'trip_appt_why2_5', 'placegroup', 'time_distance_flag', 'retmode_final', 'retmode', 'age18', 'sex', 'relate', 'lic', 'hisp', 'race', 'race_o', 'smrtphn', 'emply_ask', 'jobs', 'wkstat', 'wplace', 'wmode', 'wparkride', 'pervh', 'wrkhrs', 'wtrav', 'occup', 'occup_o', 'indus', 'indus_o', 'emply_transit', 'emply_transit_o', 'emply_park', 'emply_park_o', 'stude', 'schol', 'sloc', 'sweb', 'smode', 'sparkride', 'educ', 'hptol_o', 'pay_allday', 'tolls', 'tolltrip', 'typpl', 'carptowk', 'walktowk', 'biketowk', 'ribus', 'tcoff', 'tcdays', 'compr', 'wkflex', 'tnc_use', 'tnc_typ', 'tnc_cost', 'tnc_purp', 'disab', 'dtype_o', 'dtype2', 'nogowhy2_1', 'nogowhy2_2', 'nogowhy2_4', 'nogowhy2_5', 'traveldatause', 'traveldatadevice', 'traveldatadevice_1', 'traveldatadevice_2', 'traveldatadevice_3', 'traveldatadevice_se', 'traveldatadevice_o', 'traveldatamode', 'traveldatamode_1', 'traveldatamode_2', 'traveldatamode_3', 'traveldatamode_5', 'traveldatamode_se', 'traveldatamode_o', 'dtype_1', 'dtype_2', 'dtype_3', 'dtype_4', 'dtype_5', 'dtype_6', 'dtype_se', 'pertrips', 'hhveh', 'transprob', 'transprob_o', 'restylast', 'restylast_zip', 'hhinc2', 'homeown', 'futuresurvey', 'resty', 'hhinc', 'download', 'phase', 'vehyear', 'make', 'model', 'body', 'fuel', 'transp', 'parkd', 'removed_places']
+
+
+================================================================================
+TABLE 1 — NORMALIZED SHANNON ENTROPY
+================================================================================
+Variable               # Categories    Entropy (Oracle)    Entropy (Agent)    Delta Entropy
+-------------------  --------------  ------------------  -----------------  ---------------
+source                            2              0.92               0.4177          -0.5022
+cravl                             2              0.4465             0.2189          -0.2276
+fare                              3              0.1572             0.9157           0.7585
+payf                              7              0.8458             0.8116          -0.0341
+pkamt                             3              0.0573             0.3882           0.331
+prkty                             3              0.7643             0.7513          -0.013
+tpurp2_o                          4              0.1178             0.993            0.8753
+tpurp_check                       3              0.2652             0.8932           0.628
+trip_appt                         5              0.7772             0.4216          -0.3556
+trip_appt_why_6                   2              0.0454             0.1124           0.0669
+trip_appt_why_se                  2              0.1944             0.1124          -0.082
+trip_appt_why2_1                  2              0.0808             0.9965           0.9157
+trip_appt_why2_4                  2              0.0454             0.9999           0.9545
+trip_appt_why2_5                  2              0.1944             1                0.8056
+time_distance_flag                4              0.2031             0.3813           0.1782
+retmode_final                     3              0.2066             0.5018           0.2952
+retmode                           5              0.6765             0.5294          -0.1472
+age18                             2              0.2189             0.2592           0.0403
+sex                               2              0.981              0.9544          -0.0265
+relate                            7              0.6088             0.7827           0.174
+lic                               2              0.9948             0.9982           0.0034
+hisp                              2              0.9021             0.8033          -0.0988
+race                              5              0.9091             0.7916          -0.1175
+race_o                            2              0.2423             0.9984           0.7561
+smrtphn                           2              0.694              0.9044           0.2104
+emply_ask                         2              0.825              0.9149           0.09
+wkstat                            3              0.8082             0.7643          -0.0439
+wplace                            3              0.6666             0.634           -0.0326
+wmode                             9              0.8402             0.838           -0.0022
+pervh                             2              0.1644             0.0454          -0.119
+wtrav                             8              0.7445             0.7219          -0.0226
+occup_o                           7              0.7355             0.9557           0.2201
+indus                             9              0.6526             0.7312           0.0786
+indus_o                           5              0.6555             0.9692           0.3137
+emply_transit                     3              0.683              0.0454          -0.6376
+emply_transit_o                   2              0.1687             0.9829           0.8142
+emply_park                        3              0.7556             0.4768          -0.2788
+emply_park_o                      2              0.1687             0.9581           0.7894
+stude                             3              0.9463             0.8052          -0.1411
+schol                             5              0.8893             0.909            0.0196
+sweb                              2              0.483              0.1124          -0.3707
+smode                             6              0.793              0.8339           0.0408
+educ                              6              0.922              0.9069          -0.0151
+hptol_o                           2              0.1414             0.9974           0.856
+tolls                             4              0.116              0.9671           0.8511
+walktowk                          3              0.2601             0.2085          -0.0516
+ribus                             4              0.747              0.6034          -0.1436
+tcdays                            3              0.6098             0.6436           0.0337
+wkflex                            2              0.9988             0.0454          -0.9534
+tnc_use                           6              0.3298             0.2594          -0.0704
+tnc_typ                           3              0.7029             0.0454          -0.6575
+tnc_cost                          7              0.6884             0.8498           0.1614
+tnc_purp                          5              0.8089             0.1124          -0.6965
+disab                             2              0.6649             0.8622           0.1972
+dtype2                            2              0.9641             0.9507          -0.0134
+nogowhy2_1                        2              0.0454             0.8294           0.784
+nogowhy2_2                        2              0.0808             0.9591           0.8783
+nogowhy2_4                        2              0.0808             0.8231           0.7423
+nogowhy2_5                        2              0.2864             0.9392           0.6528
+traveldatause                     2              0.9829             0.1124          -0.8705
+traveldatadevice                  8              0.7015             0.2544          -0.4471
+traveldatadevice_1                2              0.3843             0.2632          -0.1211
+traveldatadevice_2                2              0.9878             0.2459          -0.7419
+traveldatadevice_3                2              0.7866             0.2545          -0.5321
+traveldatadevice_se               2              0.5294             0.2459          -0.2835
+traveldatamode                    7              0.745              0.6987          -0.0463
+traveldatamode_1                  2              0.795              0.6482          -0.1468
+traveldatamode_2                  2              0.7866             0.6894          -0.0972
+traveldatamode_3                  2              0.669              0.7154           0.0464
+traveldatamode_5                  2              0.9648             0.7041          -0.2607
+traveldatamode_se                 2              0.1687             0.7234           0.5547
+traveldatamode_o                  2              0.1687             0.9996           0.831
+dtype_1                           2              0.6577             0.6161          -0.0416
+dtype_2                           2              0.3843             0.6189           0.2346
+dtype_3                           2              0.4846             0.6391           0.1544
+dtype_4                           2              0.1414             0.6425           0.5011
+dtype_5                           2              0.4999             0.6391           0.1392
+dtype_6                           2              0.8813             0.6684          -0.2128
+dtype_se                          2              0.9507             0.6598          -0.2909
+hhveh                             7              0.8626             0.9669           0.1043
+transprob                         7              0.8451             0.6355          -0.2095
+transprob_o                       4              0.8174             0.9917           0.1743
+restylast                         4              0.6623             0.6839           0.0216
+hhinc2                            4              0.7168             0.4779          -0.2389
+homeown                           5              0.8884             0.8935           0.0051
+futuresurvey                      2              0.8191             0.9445           0.1254
+resty                             3              0.9331             0.48            -0.4531
+hhinc                             9              0.782              0.7831           0.001
+download                          2              0.6343             0.4846          -0.1497
+phase                             3              0.7849             0.5026          -0.2823
+body                              4              0.8047             0.6466          -0.1581
+fuel                              2              0.1511             0.4372           0.2861
+transp                            3              0.4802             0.0808          -0.3994
+parkd                             3              0.7436             0.8258           0.0822
+removed_places                    4              0.6496             0.9952           0.3456
+
+================================================================================
+TABLE 2 — KL DIVERGENCE  P(Oracle) || Q(Agent)
+================================================================================
+Variable               KL Divergence (Oracle || Agent)  Rating
+-------------------  ---------------------------------  --------------
+source                                         17.783   poor
+cravl                                           0.0347  approx_perfect
+fare                                           18.248   poor
+payf                                            4.7798  poor
+pkamt                                          18.3577  poor
+prkty                                           1.9092  poor
+tpurp2_o                                       18.2574  poor
+tpurp_check                                    18.1294  poor
+trip_appt                                       4.3896  poor
+trip_appt_why_6                                18.2972  poor
+trip_appt_why_se                               18.2859  poor
+trip_appt_why2_1                               18.1867  poor
+trip_appt_why2_4                               18.3892  poor
+trip_appt_why2_5                               17.7541  poor
+time_distance_flag                             18.1391  poor
+retmode_final                                   0.0885  good
+retmode                                         1.6584  poor
+age18                                           5.0542  poor
+sex                                             0.0041  approx_perfect
+relate                                          1.702   poor
+lic                                             0.0091  approx_perfect
+hisp                                            0.0136  approx_perfect
+race                                            0.1561  good
+race_o                                         18.2527  poor
+smrtphn                                         0.0452  approx_perfect
+emply_ask                                       0.3535  good
+wkstat                                          1.2077  moderate
+wplace                                          0.0705  good
+wmode                                           0.4827  good
+pervh                                           0.0191  approx_perfect
+wtrav                                           0.4322  good
+occup_o                                        16.9893  poor
+indus                                           3.6442  poor
+indus_o                                        17.3657  poor
+emply_transit                                   4.6661  poor
+emply_transit_o                                18.3037  poor
+emply_park                                      0.3377  good
+emply_park_o                                   18.3037  poor
+stude                                           0.1574  good
+schol                                           0.1918  good
+sweb                                            0.1175  good
+smode                                           0.4453  good
+educ                                            0.0578  good
+hptol_o                                        18.3226  poor
+tolls                                          18.2599  poor
+walktowk                                        0.4979  good
+ribus                                           0.0588  good
+tcdays                                         17.7507  poor
+wkflex                                          1.85    poor
+tnc_use                                        17.8297  poor
+tnc_typ                                         3.0261  poor
+tnc_cost                                       17.0811  poor
+tnc_purp                                       14.6902  poor
+disab                                           0.0339  approx_perfect
+dtype2                                          0.0008  approx_perfect
+nogowhy2_1                                     18.3003  poor
+nogowhy2_2                                     18.1952  poor
+nogowhy2_4                                     18.2035  poor
+nogowhy2_5                                     17.3943  poor
+traveldatause                                   1.1043  moderate
+traveldatadevice                                5.5876  poor
+traveldatadevice_1                             17.1181  poor
+traveldatadevice_2                              7.3816  poor
+traveldatadevice_3                             14.7917  poor
+traveldatadevice_se                            16.1464  poor
+traveldatamode                                  4.3801  poor
+traveldatamode_1                               13.6367  poor
+traveldatamode_2                               13.7897  poor
+traveldatamode_3                               15.046   poor
+traveldatamode_5                               12.2018  poor
+traveldatamode_se                              17.9576  poor
+traveldatamode_o                               18.3037  poor
+dtype_1                                        15.0231  poor
+dtype_2                                        17.0517  poor
+dtype_3                                        16.401   poor
+dtype_4                                        18.0329  poor
+dtype_5                                        16.4205  poor
+dtype_6                                        12.4515  poor
+dtype_se                                       12.5361  poor
+hhveh                                          13.2776  poor
+transprob                                       6.4061  poor
+transprob_o                                    17.2874  poor
+restylast                                       1.0871  moderate
+hhinc2                                          1.9197  poor
+homeown                                         0.0088  approx_perfect
+futuresurvey                                    0.0262  approx_perfect
+resty                                           0.5295  moderate
+hhinc                                          13.3066  poor
+download                                        1.4713  moderate
+phase                                           0.1672  good
+body                                           17.3051  poor
+fuel                                           18.3159  poor
+transp                                         17.8931  poor
+parkd                                          17.6037  poor
+removed_places                                 17.5201  poor
+
+================================================================================
+TABLE 3 — NUMERIC VARIABLE COMPARISON
+================================================================================
+Variable               Oracle Mean    Agent Mean    Oracle Median    Agent Median    Oracle Std    Agent Std     MAE
+-------------------  -------------  ------------  ---------------  --------------  ------------  -----------  ------
+pkamt                        -0.76          0.27             -1                 0          2.93         0.69   1.48
+tpurp                        12.48          7.19              6                 3         20.2         11.69  12.586
+tpurp2                        4.64          2.37              0                 0         15.08        13.56   6.617
+trip_appt_why_1               0             5.74              0                 6          0            1.07   5.745
+trip_appt_why_2               0             5.84              0                 6          0            0.87   5.835
+trip_appt_why_3               0             5.78              0                 6          0            1      5.785
+trip_appt_why_4               0             5.88              0                 6          0            0.75   5.88
+trip_appt_why_5               0             5.78              0                 6          0            1      5.785
+trip_appt_why_6               0.03          5.92              0                 6          0.42         0.61   5.895
+trip_appt_why_se              2.91          5.92              0                 6         16.59         0.61   8.475
+trip_appt_why_rf              0             5.9               0                 6          0            0.67   5.905
+trip_appt_why_dk              0             5.9               0                 6          0            0.7    5.9
+trip_appt_why2_1              0.01          2.86              0                 1          0.1          2      2.85
+trip_appt_why2_2              0             2.84              0                 1          0            2      2.84
+trip_appt_why2_3              0             2.84              0                 1          0            2      2.84
+trip_appt_why2_4              0.02          2.98              0                 1          0.28         2      2.96
+trip_appt_why2_5              0.15          3                 0                 3          0.86         2.01   3.01
+trip_appt_why2_se             0             3.68              0                 5          0            1.89   3.68
+trip_appt_why2_rf             0             3.68              0                 5          0            1.89   3.68
+trip_appt_why2_dk             0             3.28              0                 5          0            1.99   3.28
+retmode_final                 1.99          2.1               2                 2          0.22         0.41   0.198
+retmode                       3.36          1.84              2                 2          1.55         1.22   1.75
+age                          45.68         46.99             49                50         17.52        17.25   0
+sex                           1.42          1.38              1                 1          0.49         0.49   0
+relate                        6.4          30.8               1                 9         20.07        40.43  30.415
+lic                           1.46          1.52              1                 2          0.5          0.5    0.058
+hisp                          1.68          1.76              2                 2          0.47         0.43   0.041
+race                         16.63          5.49              4                 4         33.18        14.88  15.264
+smrtphn                       1.19          1.32              1                 1          0.39         0.47   0.214
+emply_ask                     1.26          1.67              1                 2          0.44         0.47   0.397
+volun_freq                    0             1.15              0                 1          0            0.61   1.163
+wparkride                     0.09          2                 0                 2          0.42         0      1.91
+stude                         2.24          2.49              2.5               3          0.84         0.63   0.213
+sloc                          0.25          2                 0                 2          0.66         0      1.75
+sparkride                     0.26          2                 0                 2          0.67         0      1.74
+educ                          2.87          3.16              3                 4          1.44         1.43   0.355
+typpl                         1.15          1                 1                 1          0.36         0      0.153
+tnc_typ                       1.67          1                 2                 1          0.53         0.07   0.672
+disab                         1.17          1.28              1                 1          0.38         0.45   0.032
+nogowhy2_1                    0             2.24              0                 1          0.07         1.53   2.23
+nogowhy2_2                    0.02          2.55              0                 2          0.2          1.41   2.53
+nogowhy2_3                    0             2.36              0                 2          0            1.5    2.36
+nogowhy2_4                    0.04          2.32              0                 1          0.4          1.54   2.335
+nogowhy2_5                    0.25          2.84              0                 3          1.09         1.44   2.805
+nogowhy2_rf                   0             2.26              0                 1          0            1.55   2.255
+nogowhy2_dk                   0             2.31              0                 2          0            1.53   2.31
+traveldatadevice_1            0.08          9.6               0                 2          0.26        25.84   9.52
+traveldatadevice_2            1.13          9.6               2                 2          0.99        25.84   8.47
+traveldatadevice_3            0.7          10.07              0                 2          1.28        26.56   9.84
+traveldatadevice_se          11.64          9.6               0                 2         31.6         25.84  13.17
+traveldatadevice_rf           0             9.6               0                 2          0           25.84   9.6
+traveldatadevice_dk           0             9.59              0                 2          0           25.84   9.59
+traveldatamode_1              0.24          3.2               0                 2          0.43        11.72   2.969
+traveldatamode_2              0.47          2.81              0                 2          0.85         9.61   2.428
+traveldatamode_3              0.52          2.74              0                 2          1.14         9.61   2.68
+traveldatamode_4              0             2.81              0                 2          0            9.68   2.82
+traveldatamode_5              1.95          2.71              0                 2          2.44         9.59   3.515
+traveldatamode_se             2.42          2.76              0                 2         15.18         9.69   5.228
+traveldatamode_rf             0             2.76              0                 2          0            9.94   2.806
+traveldatamode_dk             0             2.7               0                 2          0            9.66   2.711
+dtype_1                       0.17          5.07              0                 6          0.38        10.38   4.993
+dtype_2                       0.15          5.89              0                 6          0.53        12.63   6.167
+hlive                        11.81         11.49             11                 8         11.2         11.1    0.003
+homeown                       1.64          1.75              2                 2          1.33         1.29   0.235
+futuresurvey                  1.25          1.36              1                 1          0.44         0.48   0.451
+incendonate                   0             8.35              0                 0          0           26.5    8.35
+resty                         1.9           1.6               2                 1          0.91         0.95   0.531
+download                      1.84          1.1               2                 1          0.37         0.31   0.765
+phase                         0.64          0.24              0                 0          1.08         0.58   0.675
+
+================================================================================
+TABLE 4 — NLP METRICS PER FREE-TEXT FIELD
+           BLEU / ROUGE / METEOR / BERTScore
+================================================================================
+Field      BLEU    ROUGE-1    ROUGE-2    ROUGE-L    METEOR    BERTScore F1
+-------  ------  ---------  ---------  ---------  --------  --------------
+dtype    0.0043     0.5676          0     0.5676    0.2373           0.951
+
+================================================================================
+TABLE 5 — SUCCESS RATE  (SR)
+================================================================================
+  Success Rate (SR)                        1.0
+  SR Threshold                             0.7
+  N Agents                                 200
+  N Successful                             200
+  Avg Field Coverage                       0.9689
+  Min Field Coverage                       0.8712
+  Max Field Coverage                       1.0
+
+================================================================================
+TABLE 6 — TASK GOAL COMPLETION  (TGC)
+================================================================================
+  Task Goal Completion (TGC)               0.1699
+  Median TGC                               0.1943
+  Std TGC                                  0.0602
+  Min TGC                                  0.0333
+  Max TGC                                  0.2663
+  Cols evaluated                           162
+  Total weight                             127.5
+
+================================================================================
+TABLE 7 — FACTUAL CORRECTNESS  (exact norm. match)
+================================================================================
+Field                 Accuracy    N (oracle)
+------------------  ----------  ------------
+wplace                  0.9762           126
+biketowk                0.9756           123
+pervh                   0.9677           124
+ribus                   0.9675           123
+tolltrip                0.94             100
+sweb                    0.9254            67
+wmode                   0.9206           126
+schol                   0.913             92
+cravl                   0.907             43
+wtrav                   0.9024           123
+pay_allday              0.8836           146
+carptowk                0.876            121
+dtype2                  0.875            144
+walktowk                0.8537           123
+occup_o                 0.8312            77
+traveldatadevice        0.831            142
+compr                   0.7769           121
+restylast               0.6905            84
+emply_transit           0.6774           124
+indus_o                 0.6308            65
+tcoff                   0.5772           123
+traveldatause           0.5769           104
+wkflex                  0.5289           121
+smode                   0.5176            85
+wkstat                  0.5               44
+occup                   0.4365           126
+dtype_o                 0.3194            72
+traveldatamode          0.3136           169
+emply_park              0.2823           124
+indus                   0.2583           120
+prkty                   0.2326            43
+dtype_6                 0.22             200
+traveldatadevice_o      0.1429            21
+transprob               0.1298           131
+hhinc2                  0.12              25
+transprob_o             0.12              25
+race_o                  0.08              25
+dtype_3                 0.045            200
+trip_appt               0.0426            47
+tnc_purp                0.0323            31
+hhinc                   0.0296           169
+dtype_5                 0.025            200
+payf                    0.0204            49
+dtype_4                 0.015            200
+emply_transit_o         0.01             200
+dtype_se                0.01             200
+age18                   0.01             200
+traveldatamode_o        0.01             200
+hptol_o                 0.005            200
+emply_park_o            0.005            200
+resty_o                 0                200
+restylast_o             0                200
+body                    0                 46
+parkd_o                 0                 46
+parkd                   0                 46
+transp                  0                 46
+fuel_o                  0                 46
+fuel                    0                 46
+body_o                  0                 46
+model_o                 0                 46
+restylast_zip           0                 53
+model                   0                 46
+make_o                  0                 46
+make                    0                 46
+vehyear                 0                 46
+pertrips                0                200
+homeown_o               0                200
+hhveh                   0                200
+source                  0                200
+dtype_dk                0                200
+dtype_rf                0                200
+fare                    0                200
+pkbas_o                 0                200
+prkty_o                 0                200
+tpurp2_o                0                136
+tpurp_check             0                133
+trip_appt_why2_o        0                200
+placegroup              0                133
+time_distance_flag      0                133
+hisp_o                  0                200
+jobs                    0                126
+wkstat_o                0                200
+wmode_o                 0                200
+wrkhrs                  0                124
+schol_o                 0                200
+smode_o                 0                200
+educ_o                  0                200
+tolls                   0                200
+tcdays                  0                 52
+compr_o                 0                200
+tnc_use                 0                168
+tnc_cost                0                200
+removed_places          0                 67
+
+================================================================================
+TABLE 8 — RESPONSE RELEVANCE  (TF-IDF cosine)
+================================================================================
+Field      TF-IDF Cosine Sim.
+-------  --------------------
+dtype                  0.4072

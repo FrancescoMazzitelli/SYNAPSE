@@ -37,7 +37,27 @@ done
 
 echo "Found ${#datasets[@]} datasets: ${datasets[*]}"
 
+# Check for OSM PBF files in datasets
+echo ""
+echo "=== Checking for Valhalla map files ==="
+for dataset in "${datasets[@]}"; do
+    pbf_count=$(find "$dataset" -name "*.osm.pbf" 2>/dev/null | wc -l | tr -d ' ')
+    if [ "$pbf_count" -gt 0 ]; then
+        echo "  $dataset: $pbf_count .osm.pbf file(s) found"
+    else
+        echo "  $dataset: no .osm.pbf files"
+    fi
+done
+
 cd ../..
+
+# Check pyvalhalla availability
+if python3 -c "import valhalla" 2>/dev/null; then
+    echo "pyvalhalla: available"
+else
+    echo "pyvalhalla: NOT installed (Valhalla in-process routing disabled)"
+    echo "  Install with: pip install pyvalhalla"
+fi
 
 # Read models
 models=()
