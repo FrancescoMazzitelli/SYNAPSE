@@ -1,0 +1,631 @@
+
+================================================================================
+HEADER
+================================================================================
+Model   : gpt-oss:20b
+Dataset : data_NYC_mobility
+Results : 20260519_1902_results.csv
+Oracle  : sampled_oracle.csv
+Log     : log.txt
+--------------------------------------------------------------------------------
+
+================================================================================
+TABLE 0 — GLOBAL SUMMARY
+================================================================================
+Category         Metric                      Value
+---------------  --------------------------  ----------------------------
+Run Info         Model                       ollama/gpt-oss:20b
+Run Info         Temperature                 0.2
+Run Info         N Agents                    200
+Run Info         Duration (h)                57.92
+Run Info         Start Time                  2026-05-19 19:02:09
+Run Info         End Time                    2026-05-22 04:57:03
+Run Info         Sample Size                 200
+Run Info         Batch Size                  10
+Run Info         Source                      GENERIC
+Run Info         Sim Year                    2019
+Columns          Matched (results<->oracle)  176
+Columns          -> Categorical              21
+Columns          -> Numeric                  102
+Columns          -> Free-text                0
+------------     ----------------------      ----------------------------
+Entropy          Oracle Median               0.5571
+Entropy          Agent Median                0.6381
+Entropy          Agent Mean                  0.6148
+KL Divergence    Median KL                   0.5174
+KL Divergence    Mean KL                     1.8626
+------------     ----------------------      ----------------------------
+NLP - BLEU       Corpus BLEU                 0
+NLP - ROUGE      ROUGE-1                     0.0
+NLP - ROUGE      ROUGE-2                     0.0
+NLP - ROUGE      ROUGE-L                     0.0
+NLP - METEOR     METEOR                      0.0
+NLP - BERTScore  F1                          0.9478
+------------     ----------------------      ----------------------------
+Task Metrics     Success Rate (SR)           1.0
+Task Metrics     N Successful / N Total      200 / 200
+Task Metrics     Avg Field Coverage          0.9206
+Task Metrics     Task Goal Completion        0.5537
+Task Metrics     Median TGC                  0.5552
+------------     ----------------------      ----------------------------
+Factual          Global Accuracy             0.3768
+Factual          Median Accuracy             0.365
+Relevance        Global Mean (TF-IDF)        0.0
+Relevance        Global Median (TF-IDF)      0.0
+
+================================================================================
+COLUMN CLASSIFICATION  (auto-inferred from data)
+================================================================================
+Categorical      (21): ['can_drive', 'work_county', 'r_student', 'r_school_type', 'school_county', 'school_mode', 'school_mode_auto', 'school_park_loc', 'school_mode_taxi', 'school_mode_bus', 'school_mode_rail', 'school_mode_ferry', 'school_mode_bike', 'school_bike_park', 'school_mode_scooter', 'school_scooter_park', 'home_park_2', 'bike_freq', 'kid_mode', 'r_kid_mode', 'kid_mode_taxi']
+Numeric          (102):     ['phone_type', 'relationship', 'age', 'r_age', 'race_1', 'race_2', 'race_3', 'race_4', 'race_5', 'race_6', 'race_997', 'race_999', 'r_race', 'ethnicity_1', 'ethnicity_2', 'ethnicity_3', 'ethnicity_4', 'ethnicity_5', 'ethnicity_997', 'ethnicity_999', 'r_ethnicity', 'gender', 'disability_follow_6', 'education', 'employment', 'worker', 'num_jobs', 'job_type', 'work_in_region', 'work_cms_zone', 'wfh_policy', 'commute_freq', 'telework_freq', 'r_telework_freq', 'work_mode', 'r_work_mode', 'work_mode_own', 'work_mode_auto', 'work_park_loc', 'work_park_pay', 'work_park_cost', 'work_mode_taxi', 'work_mode_bus', 'work_mode_rail', 'work_mode_ferry', 'work_mode_bike', 'work_bike_park', 'work_mode_scooter', 'work_scooter_park', 'student', 'school_type', 'school_in_region', 'school_freq', 'remote_class_freq', 'school_mode_own', 'school_park_cost', 'home_park_3', 'home_park_pay', 'home_park_cost', 'second_home', 'second_home_freq', 'second_home_in_region', 'share_996', 'tnc_freq', 'tnc_purp', 'carshare_freq', 'vehicle', 'no_bike_nyc_1', 'no_bike_nyc_2', 'no_bike_nyc_3', 'no_bike_nyc_5', 'no_bike_nyc_6', 'no_bike_nyc_9', 'no_bike_nyc_997', 'no_freq_bike_nyc_997', 'citi_bike_freq', 'citi_bike_type', 'citi_bike_alt_mode', 'no_bike_share_1', 'no_bike_share_2', 'no_bike_share_3', 'no_bike_share_5', 'no_bike_share_7', 'no_bike_share_997', 'micromobility_devices_204', 'micromobility_devices_83', 'micromobility_devices_205', 'micromobility_devices_73', 'micromobility_devices_206', 'micromobility_devices_207', 'micromobility_devices_996', 'kid_accompany', 'kid_mode_own', 'kid_mode_auto', 'kid_mode_bus', 'kid_mode_rail', 'kid_mode_ferry', 'kid_access', 'kid_egress', 'kid_mode_bike', 'kid_mode_scooter', 'harassment']
+Free-text        (0):   []
+Entropy/KL cols  (107):  ['phone_type', 'age', 'r_age', 'race_1', 'race_2', 'race_3', 'race_4', 'race_5', 'race_6', 'race_997', 'race_999', 'r_race', 'ethnicity_1', 'ethnicity_2', 'ethnicity_3', 'ethnicity_4', 'ethnicity_5', 'ethnicity_997', 'ethnicity_999', 'r_ethnicity', 'gender', 'can_drive', 'disability_follow_6', 'education', 'employment', 'worker', 'num_jobs', 'job_type', 'work_in_region', 'work_county', 'work_cms_zone', 'wfh_policy', 'commute_freq', 'telework_freq', 'r_telework_freq', 'work_mode', 'r_work_mode', 'work_mode_own', 'work_mode_auto', 'work_park_loc', 'work_park_pay', 'work_park_cost', 'work_mode_taxi', 'work_mode_bus', 'work_mode_rail', 'work_mode_ferry', 'work_mode_bike', 'work_bike_park', 'work_mode_scooter', 'work_scooter_park', 'student', 'r_student', 'school_type', 'r_school_type', 'school_in_region', 'school_county', 'school_freq', 'remote_class_freq', 'school_mode', 'school_mode_own', 'school_mode_auto', 'school_park_loc', 'school_park_cost', 'school_mode_taxi', 'school_mode_bus', 'school_mode_rail', 'school_mode_ferry', 'school_mode_bike', 'school_bike_park', 'home_park_2', 'home_park_3', 'home_park_pay', 'home_park_cost', 'second_home', 'second_home_freq', 'second_home_in_region', 'share_996', 'tnc_freq', 'tnc_purp', 'carshare_freq', 'vehicle', 'bike_freq', 'no_bike_nyc_1', 'no_bike_nyc_2', 'no_bike_nyc_3', 'no_bike_nyc_5', 'no_bike_nyc_6', 'no_bike_nyc_9', 'no_bike_nyc_997', 'no_freq_bike_nyc_997', 'citi_bike_freq', 'citi_bike_type', 'citi_bike_alt_mode', 'no_bike_share_1', 'no_bike_share_2', 'no_bike_share_3', 'no_bike_share_5', 'no_bike_share_7', 'no_bike_share_997', 'micromobility_devices_204', 'micromobility_devices_83', 'micromobility_devices_205', 'micromobility_devices_73', 'micromobility_devices_206', 'micromobility_devices_207', 'micromobility_devices_996', 'harassment']
+
+
+================================================================================
+TABLE 1 — NORMALIZED SHANNON ENTROPY
+================================================================================
+Variable                     # Categories    Entropy (Oracle)    Entropy (Agent)    Delta Entropy
+-------------------------  --------------  ------------------  -----------------  ---------------
+phone_type                              5              0.6216             0.7295           0.108
+age                                     6              0.9218             0.7876          -0.1341
+r_age                                   3              0.734              0.7876           0.0536
+race_1                                  2              0.5148             0.5334           0.0186
+race_2                                  2              0.1414             0.269            0.1276
+race_3                                  2              0.669              0.6245          -0.0446
+race_4                                  2              0.0808             0.257            0.1762
+race_5                                  2              0.9615             0.841           -0.1205
+race_6                                  2              0.4846             0.7144           0.2297
+race_997                                2              0.5148             0.8246           0.3098
+race_999                                2              0.6577             0.7469           0.0892
+r_race                                  8              0.8411             0.8495           0.0085
+ethnicity_1                             2              0.9997             0.7117          -0.288
+ethnicity_2                             2              0.347              0.3675           0.0205
+ethnicity_3                             2              0.4529             0.4148          -0.0381
+ethnicity_4                             2              0.1124             0.1895           0.0771
+ethnicity_5                             2              0.4196             0.3954          -0.0241
+ethnicity_997                           2              0.5148             0.6959           0.1811
+ethnicity_999                           2              0.6577             0.7316           0.0739
+r_ethnicity                             8              0.7363             0.6494          -0.0869
+gender                                  6              0.5809             0.5704          -0.0105
+can_drive                               2              0.6098             0.8178           0.2079
+disability_follow_6                     3              0.4284             0.1813          -0.2471
+education                               8              0.8285             0.8557           0.0272
+employment                              7              0.6454             0.7551           0.1097
+worker                                  2              0.4846             0.8133           0.3286
+num_jobs                                6              0.5571             0.593            0.0359
+job_type                                6              0.8121             0.8638           0.0517
+work_in_region                          3              0.8791             0.4496          -0.4295
+work_county                             9              0.767              0.8511           0.084
+work_cms_zone                          12              0.7852             0.8184           0.0332
+wfh_policy                              8              0.8045             0.8109           0.0064
+commute_freq                            8              0.7953             0.7258          -0.0695
+telework_freq                           8              0.7453             0.7768           0.0315
+r_telework_freq                         8              0.7383             0.7797           0.0414
+work_mode                              11              0.7978             0.8003           0.0025
+r_work_mode                            10              0.7864             0.792            0.0056
+work_mode_own                           4              0.5702             0.7427           0.1725
+work_mode_auto                          3              0.14               0.4355           0.2955
+work_park_loc                           3              0.8055             0.654           -0.1514
+work_park_pay                           7              0.5341             0.5088          -0.0253
+work_park_cost                          6              0.2059             0.4108           0.2048
+work_mode_taxi                          3              0.135              0.58             0.445
+work_mode_bus                           3              0.3149             0.529            0.214
+work_mode_rail                          3              0.5128             0.5005          -0.0123
+work_mode_ferry                         2              0.1124             0.4843           0.3719
+work_mode_bike                          4              0.1994             0.6079           0.4085
+work_bike_park                          5              0.1793             0.6381           0.4589
+work_mode_scooter                       2              0.1414             0.6133           0.4718
+work_scooter_park                       3              0.1019             0.6324           0.5305
+student                                 5              0.6743             0.6104          -0.0638
+r_student                               3              0.843              0.8482           0.0052
+school_type                             7              0.6144             0.8736           0.2592
+r_school_type                           7              0.6144             0.6667           0.0523
+school_in_region                        3              0.7357             0.9222           0.1866
+school_county                           7              0.7788             0.6207          -0.1581
+school_freq                             8              0.5499             0.7948           0.2449
+remote_class_freq                       8              0.6614             0.5787          -0.0826
+school_mode                            10              0.49               0.8179           0.3279
+school_mode_own                         3              0.257              0.6971           0.4401
+school_mode_auto                        3              0.0573             0.4785           0.4212
+school_park_loc                         6              0.2114             0.6009           0.3896
+school_park_cost                        6              0.2079             0.3177           0.1098
+school_mode_taxi                        2              0.0808             0.6048           0.524
+school_mode_bus                         4              0.1662             0.7212           0.555
+school_mode_rail                        3              0.371              0.5903           0.2193
+school_mode_ferry                       2              0.0454             0.2592           0.2137
+school_mode_bike                        3              0.0796             0.5492           0.4696
+school_bike_park                        4              0.0681             0.632            0.5639
+home_park_2                             3              0.8777             0.6364          -0.2412
+home_park_3                             3              0.9756             0.6689          -0.3068
+home_park_pay                           3              0.9264             0.6298          -0.2965
+home_park_cost                          4              0.4073             0.4898           0.0825
+second_home                             2              0.5148             0.469           -0.0458
+second_home_freq                        8              0.2554             0.2868           0.0315
+second_home_in_region                   2              0.3073             0.2693          -0.038
+share_996                               3              0.5669             0.282           -0.2849
+tnc_freq                                7              0.777              0.8328           0.0558
+tnc_purp                               10              0.606              0.7583           0.1523
+carshare_freq                           5              0.2023             0.3414           0.1391
+vehicle                                 7              0.6271             0.7179           0.0908
+bike_freq                               7              0.7557             0.7722           0.0165
+no_bike_nyc_1                           3              0.3182             0.6764           0.3582
+no_bike_nyc_2                           3              0.282              0.6239           0.3419
+no_bike_nyc_3                           3              0.3008             0.5669           0.2661
+no_bike_nyc_5                           2              0.4196             0.6528           0.2332
+no_bike_nyc_6                           2              0.4196             0.9791           0.5595
+no_bike_nyc_9                           3              0.3008             0.5626           0.2618
+no_bike_nyc_997                         3              0.2927             0.6882           0.3954
+no_freq_bike_nyc_997                    3              0.7314             0.3927          -0.3387
+citi_bike_freq                          7              0.7733             0.745           -0.0282
+citi_bike_type                          6              0.463              0.6551           0.1922
+citi_bike_alt_mode                     12              0.6242             0.909            0.2848
+no_bike_share_1                         3              0.6257             0.7134           0.0876
+no_bike_share_2                         3              0.9264             0.6417          -0.2847
+no_bike_share_3                         3              0.9676             0.6481          -0.3195
+no_bike_share_5                         3              0.6578             0.6563          -0.0015
+no_bike_share_7                         3              0.6075             0.3459          -0.2616
+no_bike_share_997                       3              0.8362             0.5106          -0.3256
+micromobility_devices_204               2              0.5842             0.7118           0.1276
+micromobility_devices_83                2              0.2864             0.469            0.1826
+micromobility_devices_205               2              0.1414             0.1414           0
+micromobility_devices_73                2              0.2864             0.3274           0.041
+micromobility_devices_206               2              0.2423             0.3073           0.065
+micromobility_devices_207               2              0.4022             0.347           -0.0552
+micromobility_devices_996               2              0.9097             0.571           -0.3387
+harassment                              5              0.7282             0.8935           0.1653
+
+================================================================================
+TABLE 2 — KL DIVERGENCE  P(Oracle) || Q(Agent)
+================================================================================
+Variable                     KL Divergence (Oracle || Agent)  Rating
+-------------------------  ---------------------------------  --------------
+phone_type                                            9.5925  poor
+age                                                   9.8209  poor
+r_age                                                 0.8994  moderate
+race_1                                                0.0626  good
+race_2                                                0.0513  good
+race_3                                                0.0628  good
+race_4                                                0.0619  good
+race_5                                                0.0982  good
+race_6                                                0.1423  good
+race_997                                              0.4619  good
+race_999                                              0.2695  good
+r_race                                                2.7521  poor
+ethnicity_1                                           0.0524  good
+ethnicity_2                                           0.0291  approx_perfect
+ethnicity_3                                           0.0362  approx_perfect
+ethnicity_4                                           0.0367  approx_perfect
+ethnicity_5                                           0.0308  approx_perfect
+ethnicity_997                                         0.1769  good
+ethnicity_999                                         0.2166  good
+r_ethnicity                                           2.7869  poor
+gender                                                0.8266  moderate
+can_drive                                             0.3411  good
+disability_follow_6                                   4.1717  poor
+education                                             0.8205  moderate
+employment                                            1.0662  moderate
+worker                                                0.0681  good
+num_jobs                                              1.7757  poor
+job_type                                              0.1291  good
+work_in_region                                        0.8569  moderate
+work_county                                           0.4592  good
+work_cms_zone                                         0.651   moderate
+wfh_policy                                            4.9226  poor
+commute_freq                                          3.2799  poor
+telework_freq                                         8.129   poor
+r_telework_freq                                       2.113   poor
+work_mode                                             0.2755  good
+r_work_mode                                           0.2996  good
+work_mode_own                                         1.0489  moderate
+work_mode_auto                                        0.3323  good
+work_park_loc                                         2.6291  poor
+work_park_pay                                         1.1723  moderate
+work_park_cost                                        0.1212  good
+work_mode_taxi                                        0.5174  moderate
+work_mode_bus                                         0.1899  good
+work_mode_rail                                        0.0802  good
+work_mode_ferry                                       0.2269  good
+work_mode_bike                                        0.3812  good
+work_bike_park                                        0.4399  good
+work_mode_scooter                                     0.3573  good
+work_scooter_park                                     0.6507  moderate
+student                                               0.6698  moderate
+r_student                                             0.1103  good
+school_type                                           0.3389  good
+r_school_type                                         0.3904  good
+school_in_region                                      0.3695  good
+school_county                                         1.0017  moderate
+school_freq                                          12.1623  poor
+remote_class_freq                                    10.8907  poor
+school_mode                                           1.8219  poor
+school_mode_own                                       0.7343  moderate
+school_mode_auto                                      0.3142  good
+school_park_loc                                       2.6377  poor
+school_park_cost                                      0.2238  good
+school_mode_taxi                                      0.6169  moderate
+school_mode_bus                                       0.6382  moderate
+school_mode_rail                                      0.2987  good
+school_mode_ferry                                     0.0757  good
+school_mode_bike                                     18.0764  poor
+school_bike_park                                      1.2566  moderate
+home_park_2                                           0.6291  moderate
+home_park_3                                           0.4845  good
+home_park_pay                                         0.6758  moderate
+home_park_cost                                        0.3203  good
+second_home                                           0.0012  approx_perfect
+second_home_freq                                      0.3617  good
+second_home_in_region                                 0.011   approx_perfect
+share_996                                             0.1744  good
+tnc_freq                                              0.2759  good
+tnc_purp                                              1.657   poor
+carshare_freq                                         2.0406  poor
+vehicle                                               6.0305  poor
+bike_freq                                             4.7445  poor
+no_bike_nyc_1                                         3.5558  poor
+no_bike_nyc_2                                         4.5801  poor
+no_bike_nyc_3                                         4.5601  poor
+no_bike_nyc_5                                         4.6045  poor
+no_bike_nyc_6                                        16.6097  poor
+no_bike_nyc_9                                         4.5599  poor
+no_bike_nyc_997                                       3.588   poor
+no_freq_bike_nyc_997                                  1.9272  poor
+citi_bike_freq                                        1.6527  poor
+citi_bike_type                                        0.2688  good
+citi_bike_alt_mode                                   10.5546  poor
+no_bike_share_1                                       0.3255  good
+no_bike_share_2                                       0.8115  moderate
+no_bike_share_3                                       1.074   moderate
+no_bike_share_5                                       1.3688  moderate
+no_bike_share_7                                       0.84    moderate
+no_bike_share_997                                     1.4397  moderate
+micromobility_devices_204                             0.0104  approx_perfect
+micromobility_devices_83                              0.0167  approx_perfect
+micromobility_devices_205                             0       approx_perfect
+micromobility_devices_73                              0.0009  approx_perfect
+micromobility_devices_206                             0.0024  approx_perfect
+micromobility_devices_207                             0.0017  approx_perfect
+micromobility_devices_996                             0.7682  moderate
+harassment                                            0.1646  good
+
+================================================================================
+TABLE 3 — NUMERIC VARIABLE COMPARISON
+================================================================================
+Variable                     Oracle Mean    Agent Mean    Oracle Median    Agent Median    Oracle Std    Agent Std      MAE
+-------------------------  -------------  ------------  ---------------  --------------  ------------  -----------  -------
+phone_type                        553             1.38              995               2        494.85         0.79  551.62
+relationship                        0             1.02                0               0          0            1.55    1.025
+age                                 5.97          4.58                6               5          1.33         1.8     1.665
+r_age                               2.64          1.74                3               2          0.55         0.8     0.9
+race_1                              0.12         59.82                0               0          0.32       236.86   59.745
+race_2                              0.02         49.77                0               0          0.14       217.39   49.75
+race_3                              0.18         59.88                0               0          0.38       236.85   59.705
+race_4                              0.01         59.71                0               0          0.1        236.89   59.7
+race_5                              0.38         89.94                0               0          0.49       285.34   89.605
+race_6                              0.1          79.82                0               0          0.31       270.55   79.765
+race_997                            0.12         75.11                0               1          0.32       262.59   75.04
+race_999                            0.17         35.3                 0               1          0.38       183.23   35.245
+r_race                            173.68          4.9                 5               5        374.46         1.69  133.801
+ethnicity_1                         0.51         30.44                1               1          0.5        170.06   29.995
+ethnicity_2                         0.06         25.86                0               0          0.25       158.46   26.812
+ethnicity_3                         0.1          35.45                0               0          0.29       184.65   35.907
+ethnicity_4                         0.02         35.01                0               0          0.12       183.76   35.187
+ethnicity_5                         0.08         29.94                0               0          0.28       170.14   29.855
+ethnicity_997                       0.12         30.64                0               0          0.32       171.36   31.046
+ethnicity_999                       0.17         30.3                 0               0          0.38       170.08   30.255
+r_ethnicity                       171.8           2.38                1               1        375.31         2.08  159.138
+gender                             61.42         16.63                2               2        237.43       121.12   44.875
+disability_follow_6               855.72          5.01              995               0        346.06        70.35  850.74
+education                          59.97          5.06                6               6        227.12         2.02   55.045
+employment                          2            32.72                1               3          1.61        45.22   31.065
+worker                              0.9           0.75                1               1          0.31         0.43    0.152
+num_jobs                          105.67          1.28                1               1        305.38         0.62    6.455
+job_type                          111.7         254.5                 2               4        311.32       432.97  164.361
+work_in_region                    318.94         10.78                1               1        464.93        99.17  328.265
+work_cms_zone                     342.35        125.71                8               4        469.61       324.61  245.464
+wfh_policy                        200.74        177.05                3               4        398.19       378.13   95.72
+commute_freq                      151.2         127.42                3               4        355.41       329.12   56.005
+telework_freq                     598.34        449.7               995               4        487.33       495.39  199.14
+r_telework_freq                   583.74        446.95              995               4        490.47       495.11  186.025
+work_mode                         231.31        121.72              103             102        322.38       157.67  101.918
+r_work_mode                       231.28        124.42              103             103        322.4        156.89  105.005
+work_mode_own                     678.58        565.53              995             995        462.41       489.2   153.062
+work_mode_auto                    966.15        776.96              995             995        164.46       405.7   189.185
+work_park_loc                     647.95         14.58              995               6        474.14        98.79  633.395
+work_park_pay                     652.41         76.59              995               1        473.26       262.89  572.192
+work_park_cost                    920.52        824.47              995             995        262.3        375.48  126.704
+work_mode_taxi                    966.56        559.08              995             995        162.15       472.85  398.186
+work_mode_bus                     913.34        696.45              995             995        268.63       446.41  209.007
+work_mode_rail                    773.19        612.08              995             995        406.87       470.58  161.11
+work_mode_ferry                   982.7         796.66              995             995         99.92       373.67  186.919
+work_mode_bike                    937.62        583.76              995             995        228.16       477.27  353.855
+work_bike_park                    955.42        591.13              995             995        194.52       488.47  356.59
+work_mode_scooter                 979.18        709.7               995             995        111.02       400.09  269.48
+work_scooter_park                 985.12        591.03              995             995         98.75       487.82  418.169
+student                             1.54          1.45                2               2          0.96         0.92    0.294
+school_type                       636.28        414.39              995              13        474.43       486.35  180.377
+school_in_region                  607.29        229.33              995               1        486.1        419.53  331.565
+school_freq                       687.3         537.59              995             996        460.24       496.41  152.537
+remote_class_freq                 712.46        666.78              995             996        448.88       468.53  126.091
+school_mode_own                   925.78        407.15              995              13        252.94       483.52  532.324
+school_park_cost                  935.5         880.91              995             995        236.31       317.51   64.987
+home_park_3                       303.73         29.74                1               0        459.09       169.04  382.734
+home_park_pay                     303.66         15.46                0               0        459.13       122.12  318.015
+home_park_cost                    831.38        699.93              995             995        369.15       454.66  151.468
+second_home                         0.12          0.1                 0               0          0.32         0.3     0.015
+second_home_freq                  880.91        876.16              995             995        317.29       322.63    5.22
+second_home_in_region               0.06         10.02                0               0          0.23        99.24   10.01
+share_996                           5.26          5.06                0               0         70.34        70.35   10.27
+tnc_freq                          326.73         85.21                6               5        464.87       271.19  229.912
+tnc_purp                          608.42         34.59              995               3        479.95       160.88  531.75
+carshare_freq                     925.69        127.67              995               6        253.27       325.77  827.674
+vehicle                           352.47        472.84                6              18        472.8        493.93  396.76
+no_bike_nyc_1                     910.47         15.32              995               0        278.04       121.2   895.155
+no_bike_nyc_2                     910.43          5.34              995               0        278.17        70.33  905.1
+no_bike_nyc_3                     910.44          5.26              995               0        278.13        70.34  905.195
+no_bike_nyc_5                     910.42          5.45              995               0        278.18        70.5   904.111
+no_bike_nyc_6                     910.42          0.42              995               0        278.18         0.49  910.03
+no_bike_nyc_9                     910.44          5.25              995               0        278.13        70.34  905.22
+no_bike_nyc_997                   910.44         15.46              995               1        278.15       121.18  895.04
+no_freq_bike_nyc_997              298.56         10.82                0               1        457.07        99.16  298.82
+citi_bike_freq                     87.23          2.54                2               1        277.38         2      85.845
+citi_bike_type                    781.54        519.3               995             995        408.92       497.84  241.507
+citi_bike_alt_mode                615.9         354.11              995             106        457.02       410.81  398.747
+no_bike_share_1                   303.49         84.78                0               0        459.25       278.12  328.295
+no_bike_share_2                   303.66         10.31                0               0        459.13        99.21  313.58
+no_bike_share_3                   303.71          5.54                1               1        459.1         70.32  308.715
+no_bike_share_5                   303.5           5.46                0               0        459.24        70.32  308.725
+no_bike_share_7                   303.48         10.05                0               0        459.25        99.24  313.445
+no_bike_share_997                 303.58         10.74                0               1        459.18        99.17  293.92
+micromobility_devices_204           0.14          0.2                 0               0          0.35         0.4     0.055
+micromobility_devices_83            0.05          0.1                 0               0          0.22         0.3     0.06
+micromobility_devices_205           0.02          0.02                0               0          0.14         0.14    0.01
+micromobility_devices_73            0.05          0.06                0               0          0.22         0.24    0.01
+micromobility_devices_206           0.04          0.06                0               0          0.2          0.23    0.035
+micromobility_devices_207           0.08          0.06                0               0          0.27         0.25    0.015
+micromobility_devices_996           0.68          0.14                1               0          0.47         0.34    0.75
+kid_accompany                     995           213.93              995               0          0          409.79  781.07
+kid_mode_own                      995           821.84              995             995          0          375.46  174.355
+kid_mode_auto                     995           937.14              995             995          0          230.77   62.602
+kid_mode_bus                      995           864.58              995             995          0          330.74  139.766
+kid_mode_rail                     995           799.2               995             995          0          388.9   198.825
+kid_mode_ferry                    995           982.22              995             995          0          103.98   12.78
+kid_access                        995           535.66              995             995          0          495.84  468.367
+kid_egress                        995           485.68              995               9          0          497.11  530.994
+kid_mode_bike                     995           821.6               995             995          0          365.69  174.273
+kid_mode_scooter                  995           923.9               995             995          0          226.67   71.105
+harassment                         11.88          2.1                 1               2         99.06         1.08   10.325
+
+================================================================================
+TABLE 4 — NLP METRICS PER FREE-TEXT FIELD
+           BLEU / ROUGE / METEOR / BERTScore
+================================================================================
+Field                      BLEU    ROUGE-1    ROUGE-2    ROUGE-L    METEOR      BERTScore F1
+-------------------------  ------  ---------  ---------  ---------  --------  --------------
+age                        —       —          —          —          —                 0.9855
+bike_freq                  —       —          —          —          —                 0.9152
+bike_purp_1                —       —          —          —          —                 0.9663
+bike_purp_2                —       —          —          —          —                 0.9724
+bike_purp_3                —       —          —          —          —                 0.9795
+bike_purp_4                —       —          —          —          —                 0.9789
+bike_purp_5                —       —          —          —          —                 0.9854
+bike_purp_6                —       —          —          —          —                 0.9741
+bike_purp_997              —       —          —          —          —                 0.9387
+bike_stolen                —       —          —          —          —                 0.9593
+can_drive                  —       —          —          —          —                 0.9584
+carshare_freq              —       —          —          —          —                 0.9251
+citi_bike_alt_mode         —       —          —          —          —                 0.9509
+citi_bike_freq             —       —          —          —          —                 0.9759
+citi_bike_pay              —       —          —          —          —                 0.9327
+citi_bike_type             —       —          —          —          —                 0.9721
+commute_freq               —       —          —          —          —                 0.9735
+disability                 —       —          —          —          —                 0.9835
+disability_follow_1        —       —          —          —          —                 0.8589
+disability_follow_2        —       —          —          —          —                 0.8589
+disability_follow_3        —       —          —          —          —                 0.8562
+disability_follow_4        —       —          —          —          —                 0.8535
+disability_follow_5        —       —          —          —          —                 0.8576
+disability_follow_6        —       —          —          —          —                 0.8577
+disability_follow_996      —       —          —          —          —                 0.8433
+disability_follow_999      —       —          —          —          —                 0.8447
+education                  —       —          —          —          —                 0.9912
+employment                 —       —          —          —          —                 0.9685
+ethnicity_1                —       —          —          —          —                 0.9754
+ethnicity_2                —       —          —          —          —                 0.9873
+ethnicity_3                —       —          —          —          —                 0.9935
+ethnicity_4                —       —          —          —          —                 0.9929
+ethnicity_5                —       —          —          —          —                 0.9944
+ethnicity_997              —       —          —          —          —                 0.9577
+ethnicity_999              —       —          —          —          —                 0.9376
+gender                     —       —          —          —          —                 0.9945
+harassment                 —       —          —          —          —                 0.991
+harassment_change_1        —       —          —          —          —                 0.9215
+harassment_change_10       —       —          —          —          —                 0.9693
+harassment_change_2        —       —          —          —          —                 0.9303
+harassment_change_3        —       —          —          —          —                 0.9249
+harassment_change_4        —       —          —          —          —                 0.9479
+harassment_change_5        —       —          —          —          —                 0.9215
+harassment_change_6        —       —          —          —          —                 0.8886
+harassment_change_7        —       —          —          —          —                 0.9502
+harassment_change_8        —       —          —          —          —                 0.895
+harassment_change_9        —       —          —          —          —                 0.9305
+harassment_change_996      —       —          —          —          —                 0.8734
+harassment_change_997      —       —          —          —          —                 0.8809
+hh_id                      0       0.0        0.0        0.0        0.0               0.7619
+home_park_1                —       —          —          —          —                 0.8846
+home_park_2                —       —          —          —          —                 0.8971
+home_park_3                —       —          —          —          —                 0.9242
+home_park_amount           0       0.0        0.0        0.0        0.0               0.8225
+home_park_cost             —       —          —          —          —                 0.9864
+home_park_pay              —       —          —          —          —                 0.9384
+industry                   —       —          —          —          —                 0.9407
+job_type                   —       —          —          —          —                 0.9761
+kid_access                 —       —          —          —          —                 0.9544
+kid_accompany              —       —          —          —          —                 0.8715
+kid_egress                 —       —          —          —          —                 0.9475
+kid_mode                   —       —          —          —          —                 0.9969
+kid_mode_auto              —       —          —          —          —                 0.9907
+kid_mode_bike              —       —          —          —          —                 0.9843
+kid_mode_bus               —       —          —          —          —                 0.9898
+kid_mode_ferry             —       —          —          —          —                 0.999
+kid_mode_own               —       —          —          —          —                 0.9853
+kid_mode_rail              —       —          —          —          —                 0.9838
+kid_mode_scooter           —       —          —          —          —                 0.9955
+kid_mode_taxi              —       —          —          —          —                 0.9857
+micromobility_devices_204  —       —          —          —          —                 0.9925
+micromobility_devices_205  —       —          —          —          —                 0.9986
+micromobility_devices_206  —       —          —          —          —                 0.9952
+micromobility_devices_207  —       —          —          —          —                 0.998
+micromobility_devices_73   —       —          —          —          —                 0.9986
+micromobility_devices_83   —       —          —          —          —                 0.9918
+micromobility_devices_996  —       —          —          —          —                 0.898
+no_bike_nyc_1              —       —          —          —          —                 0.8683
+no_bike_nyc_2              —       —          —          —          —                 0.8701
+no_bike_nyc_3              —       —          —          —          —                 0.8638
+no_bike_nyc_4              —       —          —          —          —                 0.8789
+no_bike_nyc_5              —       —          —          —          —                 0.8749
+no_bike_nyc_6              —       —          —          —          —                 0.8719
+no_bike_nyc_7              —       —          —          —          —                 0.8759
+no_bike_nyc_9              —       —          —          —          —                 0.862
+no_bike_nyc_997            —       —          —          —          —                 0.8753
+no_bike_share_1            —       —          —          —          —                 0.9424
+no_bike_share_2            —       —          —          —          —                 0.9222
+no_bike_share_3            —       —          —          —          —                 0.9068
+no_bike_share_4            —       —          —          —          —                 0.9053
+no_bike_share_5            —       —          —          —          —                 0.9043
+no_bike_share_6            —       —          —          —          —                 0.8959
+no_bike_share_7            —       —          —          —          —                 0.9425
+no_bike_share_8            —       —          —          —          —                 0.8852
+no_bike_share_997          —       —          —          —          —                 0.8861
+no_freq_bike_nyc_1         —       —          —          —          —                 0.9198
+no_freq_bike_nyc_2         —       —          —          —          —                 0.9094
+no_freq_bike_nyc_3         —       —          —          —          —                 0.9107
+no_freq_bike_nyc_4         —       —          —          —          —                 0.8997
+no_freq_bike_nyc_5         —       —          —          —          —                 0.9005
+no_freq_bike_nyc_6         —       —          —          —          —                 0.9067
+no_freq_bike_nyc_997       —       —          —          —          —                 0.8877
+num_jobs                   —       —          —          —          —                 0.9822
+phone_type                 —       —          —          —          —                 0.9338
+r_age                      —       —          —          —          —                 0.9821
+r_ethnicity                —       —          —          —          —                 0.9685
+r_kid_mode                 —       —          —          —          —                 0.9974
+r_race                     —       —          —          —          —                 0.9847
+r_school_type              —       —          —          —          —                 0.9953
+r_student                  —       —          —          —          —                 0.9903
+r_telework_freq            —       —          —          —          —                 0.9767
+r_work_mode                —       —          —          —          —                 0.9873
+race_1                     —       —          —          —          —                 0.984
+race_2                     —       —          —          —          —                 0.9918
+race_3                     —       —          —          —          —                 0.9895
+race_4                     —       —          —          —          —                 0.9902
+race_5                     —       —          —          —          —                 0.9778
+race_6                     —       —          —          —          —                 0.9644
+race_997                   —       —          —          —          —                 0.9313
+race_999                   —       —          —          —          —                 0.9344
+relationship               —       —          —          —          —                 0.9528
+remote_class_freq          —       —          —          —          —                 0.9717
+school_bike_park           —       —          —          —          —                 0.9385
+school_county              —       —          —          —          —                 0.9554
+school_freq                —       —          —          —          —                 0.966
+school_in_region           —       —          —          —          —                 0.9427
+school_mode                —       —          —          —          —                 0.9663
+school_mode_auto           —       —          —          —          —                 0.9806
+school_mode_bike           —       —          —          —          —                 0.916
+school_mode_bus            —       —          —          —          —                 0.9664
+school_mode_ferry          —       —          —          —          —                 0.9938
+school_mode_own            —       —          —          —          —                 0.9532
+school_mode_rail           —       —          —          —          —                 0.981
+school_mode_scooter        —       —          —          —          —                 0.9804
+school_mode_taxi           —       —          —          —          —                 0.9641
+school_park_cost           —       —          —          —          —                 0.9937
+school_park_loc            —       —          —          —          —                 0.9262
+school_scooter_park        —       —          —          —          —                 0.9375
+school_type                —       —          —          —          —                 0.9789
+second_home                —       —          —          —          —                 0.998
+second_home_freq           —       —          —          —          —                 0.9967
+second_home_in_region      —       —          —          —          —                 0.9902
+share_1                    —       —          —          —          —                 0.9954
+share_2                    —       —          —          —          —                 0.9978
+share_3                    —       —          —          —          —                 0.9842
+share_4                    —       —          —          —          —                 0.9992
+share_5                    —       —          —          —          —                 0.9876
+share_6                    —       —          —          —          —                 0.9965
+share_996                  —       —          —          —          —                 0.9548
+student                    —       —          —          —          —                 0.9871
+telework_freq              —       —          —          —          —                 0.9699
+tnc_freq                   —       —          —          —          —                 0.9733
+tnc_purp                   —       —          —          —          —                 0.9456
+vehicle                    —       —          —          —          —                 0.9573
+wfh_policy                 —       —          —          —          —                 0.9697
+work_bike_park             —       —          —          —          —                 0.9669
+work_cms_zone              —       —          —          —          —                 0.9742
+work_county                —       —          —          —          —                 0.9789
+work_in_region             —       —          —          —          —                 0.941
+work_mode                  —       —          —          —          —                 0.987
+work_mode_auto             —       —          —          —          —                 0.984
+work_mode_bike             —       —          —          —          —                 0.9672
+work_mode_bus              —       —          —          —          —                 0.9839
+work_mode_ferry            —       —          —          —          —                 0.9823
+work_mode_own              —       —          —          —          —                 0.9813
+work_mode_rail             —       —          —          —          —                 0.9866
+work_mode_scooter          —       —          —          —          —                 0.9794
+work_mode_taxi             —       —          —          —          —                 0.9635
+work_park_cost             —       —          —          —          —                 0.987
+work_park_loc              —       —          —          —          —                 0.9434
+work_park_pay              —       —          —          —          —                 0.9385
+work_scooter_park          —       —          —          —          —                 0.9652
+worker                     —       —          —          —          —                 0.9795
+
+================================================================================
+TABLE 5 — SUCCESS RATE  (SR)
+================================================================================
+  Success Rate (SR)                        1.0
+  SR Threshold                             0.7
+  N Agents                                 200
+  N Successful                             200
+  Avg Field Coverage                       0.9206
+  Min Field Coverage                       0.8374
+  Max Field Coverage                       0.9837
+
+================================================================================
+TABLE 6 — TASK GOAL COMPLETION  (TGC)
+================================================================================
+  Task Goal Completion (TGC)               0.5537
+  Median TGC                               0.5552
+  Std TGC                                  0.0509
+  Min TGC                                  0.4241
+  Max TGC                                  0.6683
+  Cols evaluated                           123
+  Total weight                             72.0
+
+================================================================================
+TABLE 7 — FACTUAL CORRECTNESS  (exact norm. match)
+================================================================================
+Field                  Accuracy    N (oracle)
+-------------------  ----------  ------------
+work_county              0.7955           132
+r_school_type            0.735            200
+school_mode_ferry        0.655            200
+can_drive                0.6              200
+kid_mode_taxi            0.58             200
+school_county            0.5417            72
+school_mode_rail         0.49             200
+r_student                0.455            200
+r_kid_mode               0.415            200
+kid_mode                 0.405            200
+school_mode_auto         0.365            200
+school_mode_scooter      0.36             200
+school_mode              0.26             200
+bike_freq                0.255            200
+school_mode_taxi         0.235            200
+home_park_2              0.23             200
+school_mode_bus          0.21             200
+school_bike_park         0.125            200
+school_park_loc          0.1              200
+school_scooter_park      0.09             200
+school_mode_bike         0.01             200
+
+================================================================================
+TABLE 8 — RESPONSE RELEVANCE  (TF-IDF cosine)
+================================================================================
+(no data)

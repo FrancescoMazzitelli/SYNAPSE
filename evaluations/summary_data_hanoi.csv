@@ -1,9 +1,9 @@
 model,dataset,n_agents,n_matched_cols,n_categorical,n_numeric,n_free_text,entropy_oracle_median,entropy_agent_median,kl_median,bleu_global,rouge1,rouge2,rougeL,meteor,bertscore_f1,success_rate,avg_field_coverage,tgc,median_tgc,factual_accuracy,median_factual_accuracy,relevance_mean,relevance_median,report_path
-gemma2:27b,data_hanoi,200,53,18,11,1,0.8088,0.707,0.8797,0.0001,0.0221,0.0,0.0221,0.0162,0.9264,1.0,1.0,0.534,0.5319,0.4772,0.4425,0.1858,0.0,evaluations/gemma2:27b/data_hanoi/evaluation_report.txt
-gemma2:9b,data_hanoi,200,53,14,11,1,0.8365,0.8254,0.319,0.0001,0.0384,0.0,0.0384,0.0285,0.914,1.0,0.9998,0.5452,0.5385,0.5204,0.4275,0.2832,0.2905,evaluations/gemma2:9b/data_hanoi/evaluation_report.txt
-gemma3:27b,data_hanoi,200,53,20,11,1,0.7746,0.7378,0.7243,0.0001,0.0405,0.0,0.0405,0.0301,0.9109,1.0,1.0,0.3903,0.3922,0.3229,0.3025,0.3186,0.3286,evaluations/gemma3:27b/data_hanoi/evaluation_report.txt
-gpt-oss:20b,data_hanoi,200,53,21,11,1,0.8308,0.8419,0.4536,0.0001,0.0286,0.0,0.0286,0.0207,0.9236,1.0,0.9855,0.4819,0.4717,0.4279,0.325,0.23,0.0,evaluations/gpt-oss:20b/data_hanoi/evaluation_report.txt
-llama3.1:8b,data_hanoi,200,53,17,11,0,0.8372,0.6454,0.5251,0.0,0.0585,0.0148,0.0555,0.0,0.9154,1.0,1.0,0.5511,0.5556,0.5079,0.44,0.0,0.0,evaluations/llama3.1:8b/data_hanoi/evaluation_report.txt
+gemma2:27b,data_hanoi,200,53,18,11,1,0.8267,0.707,0.8797,0.0001,0.0221,0.0,0.0221,0.0162,0.9264,1.0,1.0,0.534,0.5319,0.4772,0.4425,0.1858,0.0,evaluations/gemma2:27b/data_hanoi/evaluation_report.txt
+gemma2:9b,data_hanoi,200,53,14,11,1,0.8267,0.8254,0.319,0.0001,0.0384,0.0,0.0384,0.0285,0.914,1.0,0.9998,0.5452,0.5385,0.5204,0.4275,0.2832,0.2905,evaluations/gemma2:9b/data_hanoi/evaluation_report.txt
+gemma3:27b,data_hanoi,200,53,20,11,1,0.8267,0.7378,0.7243,0.0001,0.0405,0.0,0.0405,0.0301,0.9109,1.0,1.0,0.3903,0.3922,0.3229,0.3025,0.3186,0.3286,evaluations/gemma3:27b/data_hanoi/evaluation_report.txt
+gpt-oss:20b,data_hanoi,200,53,21,11,1,0.8267,0.8419,0.4536,0.0001,0.0286,0.0,0.0286,0.0207,0.9236,1.0,0.9855,0.4819,0.4717,0.4279,0.325,0.23,0.0,evaluations/gpt-oss:20b/data_hanoi/evaluation_report.txt
+llama3.1:8b,data_hanoi,200,53,17,11,0,0.8267,0.6454,0.5251,0.0,0.0585,0.0148,0.0555,0.0,0.9154,1.0,1.0,0.5511,0.5556,0.5079,0.44,0.0,0.0,evaluations/llama3.1:8b/data_hanoi/evaluation_report.txt
 llama3.3:70b,data_hanoi,200,53,22,11,1,0.8267,0.7963,0.4318,0.0001,0.0403,0.0,0.0403,0.0297,0.9248,1.0,0.9994,0.5142,0.5273,0.475,0.4275,0.2954,0.267,evaluations/llama3.3:70b/data_hanoi/evaluation_report.txt
-mistral-nemo:12b,data_hanoi,200,53,15,11,0,0.8462,0.6936,0.3866,0.0,0.0573,0.0228,0.0546,0.0,0.9236,1.0,1.0,0.5497,0.5447,0.4993,0.435,0.0,0.0,evaluations/mistral-nemo:12b/data_hanoi/evaluation_report.txt
-mistral:7b,data_hanoi,200,53,20,11,0,0.7645,0.8334,0.3946,0.0,0.0509,0.0085,0.0451,0.0,0.9237,1.0,0.9297,0.4724,0.4706,0.4483,0.4375,0.0,0.0,evaluations/mistral:7b/data_hanoi/evaluation_report.txt
+mistral-nemo:12b,data_hanoi,200,53,15,11,0,0.8267,0.6936,0.3866,0.0,0.0573,0.0228,0.0546,0.0,0.9236,1.0,1.0,0.5497,0.5447,0.4993,0.435,0.0,0.0,evaluations/mistral-nemo:12b/data_hanoi/evaluation_report.txt
+mistral:7b,data_hanoi,200,53,20,11,0,0.8267,0.8334,0.3946,0.0,0.0509,0.0085,0.0451,0.0,0.9237,1.0,0.9297,0.4724,0.4706,0.4483,0.4375,0.0,0.0,evaluations/mistral:7b/data_hanoi/evaluation_report.txt

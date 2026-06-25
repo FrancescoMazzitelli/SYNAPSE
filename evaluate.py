@@ -150,6 +150,7 @@ def load_and_map(results_path: str, oracle_path: str):
 NR_SENTINEL = "<NR>"
 
 NON_RESPONSE_CODES = frozenset({"-1", "-7", "-8", "-9"})
+DROPPED_VALUES = frozenset({NR_SENTINEL, "NAN", "NONE", "NAT", ""})
 
 
 def _strip_float(s: str) -> str:
@@ -270,6 +271,14 @@ def _resolve_agent(val, col: str = ""):
             return NR_SENTINEL
         return code
 
+    # Dbis) "code - label" format (NYC mobility style)  e.g. "1- Yes", "106- Uber/ Lyft"
+    m_code_dash = re.match(r"^(-?\d+)\s*-\s+", s)
+    if m_code_dash:
+        code = m_code_dash.group(1)
+        if code in NON_RESPONSE_CODES:
+            return NR_SENTINEL
+        return code
+
     # E) Bare number
     s_clean = _strip_float(s)
     if s_clean in NON_RESPONSE_CODES:
@@ -302,7 +311,10 @@ def _normalise_oracle(val):
 
 def _parse_py_list(s: str) -> list:
     """Extract numeric codes from a Python‑list string like \"['1: text', '2: text']\"."""
-    return re.findall(r"'(-?\d+)\s*:", s)
+    codes = re.findall(r"'(-?\d+)\s*:", s)
+    if not codes:
+        codes = re.findall(r"'(-?\d+)\s*-", s)
+    return codes
 
 
 def _resolve_flag_col(val, expected_code: str, col: str = ""):
@@ -394,7 +406,7 @@ def identify_nr_columns(ora: pd.DataFrame, threshold: float = None) -> set:
     """
     if threshold is None:
         threshold = NR_THRESHOLD
-    drop_keys = {NR_SENTINEL, "NAN", "NONE", "NAT", ""}
+    drop_keys = DROPPED_VALUES
     nr_cols = set()
     for col in ora.columns:
         s = ora[col]
@@ -437,7 +449,7 @@ def identify_zero_overlap_columns(res: pd.DataFrame, ora: pd.DataFrame) -> set:
     non‑response values).  These are columns where the agent is systematically
     answering a different question or using a different code space.
     """
-    drop_keys = frozenset({NR_SENTINEL, "NAN", "NONE", "NAT", ""})
+    drop_keys = DROPPED_VALUES
     no_overlap = set()
     for col in res.columns:
         r_set = set()
@@ -523,7 +535,7 @@ def select_entropy_kl_columns(res: pd.DataFrame, ora: pd.DataFrame) -> list:
     (after excluding sentinel non‑response values).  These columns are used
     for entropy and KL‑divergence evaluation.
     """
-    drop_keys = {NR_SENTINEL, "NAN", "NONE", "NAT", ""}
+    drop_keys = DROPPED_VALUES
     cols = []
     for col in res.columns:
         clean = ora[col].astype(str)
@@ -559,17 +571,13 @@ def norm_str(s) -> str:
     return re.sub(r"\s+", " ", s)
 
 def tokenise(text) -> list:
-    t = norm_str(text)
-    # Split on common multi-code delimiters
-    for sep in (";", ",", "|", "/"):
-        t = t.replace(sep, " ")
-    return t.split()
+    # norm_str already replaces delimiters with spaces
+    return norm_str(text).split()
 
 def get_dist(series: pd.Series) -> dict:
     counts = series.dropna().value_counts()
     # Exclude sentinel non‑response values from the distribution
-    drop_keys = {NR_SENTINEL, "NAN", "NONE", "NAT", ""}
-    counts   = counts[~counts.index.isin(drop_keys)]
+    counts   = counts[~counts.index.isin(DROPPED_VALUES)]
     total    = counts.sum()
     return {k: v / total for k, v in counts.items()} if total else {}
 
@@ -626,6 +634,9 @@ def compute_entropy_table(res, ora, categorical_cols, min_cats=2, max_cats=9) ->
         })
     return pd.DataFrame(rows)
 
+
+# ==============================================================================
+# METRIC B — KL DIVERGENCE
 # ==============================================================================
 # METRIC B — KL DIVERGENCE
 # ==============================================================================
@@ -1169,7 +1180,7 @@ def _load_dataset_dictionary(dataset: str):
     _LABEL_MAP = load_label_map(dict_path)
 
 
-def run_single_evaluation(run_info: dict, out_dir: Path) -> dict:
+def run_single_evaluation(run_info: dict, out_dir: Path, report_path_override: str = None) -> dict:
     """Run the full evaluation pipeline for a single model/dataset pair."""
     global CATEGORICAL_MAX_UNIQUE, FREE_TEXT_MIN_UNIQUE, NR_THRESHOLD, EXCLUDED_COLS, AGENT_VAR_MIN_UNIQUE
 
@@ -1224,6 +1235,11 @@ def run_single_evaluation(run_info: dict, out_dir: Path) -> dict:
     _, _, free_text_pre = classify_columns(res_nlp, ora_nlp)
     nlp_all_cols = [c for c in res_nlp.columns if c in ora_nlp.columns]
 
+    # Baseline oracle copy for model‑invariant entropy computation
+    # (all columns that pass NR/exclusion, before per‑model filtering)
+    ora_base = ora.copy()
+    canonical_entropy_kl_cols = select_entropy_kl_columns(ora_base, ora_base)
+
     print("[1f/11] Removing agent-constant (non-varying) columns ...")
     agent_const = identify_agent_constant_columns(res, ora)
     if agent_const:
@@ -1246,7 +1262,7 @@ def run_single_evaluation(run_info: dict, out_dir: Path) -> dict:
     numeric_cols, categorical_cols, free_text_cols = classify_columns(res, ora)
 
     print(f"[2b/11] Selecting columns for entropy/KL (2-{CATEGORICAL_MAX_UNIQUE} oracle categories) ...")
-    entropy_kl_cols = select_entropy_kl_columns(res, ora)
+    entropy_kl_cols = [c for c in canonical_entropy_kl_cols if c in res.columns and c in ora.columns]
     print(f"       {len(entropy_kl_cols)} columns selected")
 
     print("[3/11] Shannon Entropy ...")
@@ -1273,8 +1289,13 @@ def run_single_evaluation(run_info: dict, out_dir: Path) -> dict:
     factual = compute_factual(res, ora, categorical_cols)
     relevance = compute_relevance(res, ora, free_text_cols)
 
-    report_dir = out_dir / model / dataset
-    report_path = report_dir / "evaluation_report.txt"
+    if report_path_override:
+        report_path = Path(report_path_override)
+        report_dir = report_path.parent
+    else:
+        report_dir = out_dir / model / dataset
+        report_path = report_dir / "evaluation_report.txt"
+    report_dir.mkdir(parents=True, exist_ok=True)
 
     print("[11/11] Assembling report ...")
     summary_df = build_summary(
@@ -1321,6 +1342,9 @@ def run_single_evaluation(run_info: dict, out_dir: Path) -> dict:
     print(f"\n  GLOBAL SUMMARY — {model} / {dataset}")
     print(tbl(summary_df))
 
+    # Oracle entropy on the canonical (model‑invariant) column set
+    _canonical_ent_df = compute_entropy_table(ora_base, ora_base, canonical_entropy_kl_cols, max_cats=CATEGORICAL_MAX_UNIQUE)
+
     return {
         "model": model,
         "dataset": dataset,
@@ -1329,7 +1353,7 @@ def run_single_evaluation(run_info: dict, out_dir: Path) -> dict:
         "n_categorical": len(categorical_cols),
         "n_numeric": len(numeric_cols),
         "n_free_text": len(free_text_cols),
-        "entropy_oracle_median": round(entropy_df["Entropy (Oracle)"].median(), 4) if not entropy_df.empty else 0,
+        "entropy_oracle_median": round(_canonical_ent_df["Entropy (Oracle)"].median(), 4) if not _canonical_ent_df.empty else 0,
         "entropy_agent_median": round(entropy_df["Entropy (Agent)"].median(), 4) if not entropy_df.empty else 0,
         "kl_median": round(kl_df["KL Divergence (Oracle || Agent)"].median(), 4) if not kl_df.empty else 0,
         "bleu_global": bleu["global"],
@@ -1461,150 +1485,38 @@ def main():
             print(tbl(comp_df))
         return
 
-    # ── Single-run mode (backward compatible) ──────────────────────────
+    # ── Single-run mode (backward compatible shim) ────────────────────
     if not args.results or not args.oracle:
         sys.exit("[ERROR] Either --results-dir (batch) or --results + --oracle (single) required.")
 
-    # Infer dataset from results path for dictionary loading
-    results_path = args.results
-    oracle_path = args.oracle
-    log_path = args.log if args.log else ""
     out_path = args.out if args.out else "evaluation_report.txt"
 
     inferred_dataset = args.dataset
     if not inferred_dataset:
         for known_dataset in ["data_lyon_EDGT", "data_MyDailyTravelData", "data_NYC_mobility",
                                "data_VTC_survey", "data_pmus_yaounde", "data_hanoi"]:
-            if known_dataset in results_path:
+            if known_dataset in args.results:
                 inferred_dataset = known_dataset
                 break
     if not inferred_dataset:
         inferred_dataset = "data_MyDailyTravelData"
-    _load_dataset_dictionary(inferred_dataset)
 
-    print(f"\n[1/11] Loading and mapping columns ...")
-    res, ora, col_map, meta_cols, n = load_and_map(results_path, oracle_path)
-    log_info = load_log(log_path)
-    print(f"       {n} rows  |  {len(col_map)} shared cols  |  "
-          f"excluded metadata: {meta_cols}")
+    # Infer model from grandparent directory name of the results file
+    try:
+        inferred_model = Path(args.results).parent.parent.name
+    except Exception:
+        inferred_model = "unknown"
 
-    print("[1b/11] Resolving code:label format in agent responses ...")
-    res, ora = resolve_code_label_format(res, ora)
+    run_info = {
+        "model":    inferred_model,
+        "dataset":  inferred_dataset,
+        "results":  args.results,
+        "oracle":   args.oracle,
+        "log":      args.log if args.log else "",
+    }
 
-    print("[1c/11] Binarizing multi-select indicator columns ...")
-    binarized = binarize_flag_cols(res, ora)
-    if binarized:
-        print(f"       Binarized {len(binarized)} flag columns")
-
-    print("[1d/11] Identifying and removing NR/NA-heavy columns ...")
-    nr_cols = identify_nr_columns(ora, NR_THRESHOLD)
-    if nr_cols:
-        print(f"       Dropping {len(nr_cols)} columns with >{NR_THRESHOLD:.0%} NR/NA")
-        res.drop(columns=[c for c in nr_cols if c in res.columns], inplace=True)
-        ora.drop(columns=[c for c in nr_cols if c in ora.columns], inplace=True)
-    else:
-        print(f"       No columns exceed {NR_THRESHOLD:.0%} NR/NA")
-
-    print("[1e/11] Removing known mismatched (persona) columns ...")
-    to_drop = [c for c in EXCLUDED_COLS if c in ora.columns]
-    if to_drop:
-        print(f"       Dropping {len(to_drop)} columns with mismatched content: {to_drop}")
-        res.drop(columns=to_drop, inplace=True)
-        ora.drop(columns=to_drop, inplace=True)
-    else:
-        print(f"       No mismatched columns found")
-
-    print("[2/11] Auto-classifying columns ...")
-    numeric_cols, categorical_cols, free_text_cols = classify_columns(res, ora)
-    print(f"       Categorical : {categorical_cols}")
-    print(f"       Numeric     : {numeric_cols}")
-    print(f"       Free-text   : {free_text_cols}")
-
-    print("[2b/11] Selecting columns for entropy/KL (2-9 oracle categories) ...")
-    entropy_kl_cols = select_entropy_kl_columns(res, ora)
-    print(f"       Entropy/KL cols : {entropy_kl_cols}")
-
-    print("[3/11] Shannon Entropy ...")
-    entropy_df = compute_entropy_table(res, ora, entropy_kl_cols)
-
-    print("[4/11] KL Divergence ...")
-    kl_df = compute_kl_table(res, ora, entropy_kl_cols)
-
-    print("[5/11] Numeric comparison ...")
-    num_df = compute_numeric_table(res, ora, numeric_cols)
-
-    print("[6/11] BLEU ...")
-    bleu = compute_bleu(res, ora, free_text_cols)
-    print("[7/11] ROUGE ...")
-    rouge = compute_rouge(res, ora, free_text_cols)
-    print("[8/11] METEOR ...")
-    meteor = compute_meteor(res, ora, free_text_cols)
-    print("[9/11] BERTScore ...")
-    bertscore = compute_bertscore(res, ora, free_text_cols)
-    print(f"       {bertscore['note']}")
-
-    print("[10/11] SR / TGC / Factual / Relevance ...")
-    sr = compute_sr(res)
-    tgc = compute_tgc(res, ora, categorical_cols, numeric_cols)
-    factual = compute_factual(res, ora, categorical_cols)
-    relevance = compute_relevance(res, ora, free_text_cols)
-
-    print("[11/11] Assembling report ...")
-    summary_df = build_summary(
-        log_info, n, col_map,
-        categorical_cols, numeric_cols, free_text_cols,
-        entropy_df, kl_df, bleu, rouge, meteor, bertscore,
-        sr, tgc, factual, relevance,
-    )
-    nlp_df = build_nlp_table(bleu, rouge, meteor, bertscore)
-    factual_df = build_factual_table(factual)
-    relevance_df = build_relevance_table(relevance)
-
-    col_class_txt = (
-        f"Categorical      ({len(categorical_cols)}): {categorical_cols}\n"
-        f"Numeric          ({len(numeric_cols)}):     {numeric_cols}\n"
-        f"Free-text        ({len(free_text_cols)}):   {free_text_cols}\n"
-        f"Entropy/KL cols  ({len(entropy_kl_cols)}):  {entropy_kl_cols}\n"
-    )
-
-    header_txt = (
-        f"Results : {Path(results_path).name}\n"
-        f"Oracle  : {Path(oracle_path).name}\n"
-        f"Log     : {Path(log_path).name if log_path else 'N/A'}\n"
-        f"{SEP2}"
-    )
-
-    write_report(out_path, [
-        ("HEADER", header_txt),
-        ("TABLE 0 — GLOBAL SUMMARY", tbl(summary_df)),
-        ("COLUMN CLASSIFICATION  (auto-inferred from data)", col_class_txt),
-        ("TABLE 1 — NORMALIZED SHANNON ENTROPY", tbl(entropy_df)),
-        ("TABLE 2 — KL DIVERGENCE  P(Oracle) || Q(Agent)", tbl(kl_df)),
-        ("TABLE 3 — NUMERIC VARIABLE COMPARISON", tbl(num_df)),
-        ("TABLE 4 — NLP METRICS PER FREE-TEXT FIELD\n"
-         "           BLEU / ROUGE / METEOR / BERTScore", tbl(nlp_df)),
-        ("TABLE 5 — SUCCESS RATE  (SR)", _kv(sr)),
-        ("TABLE 6 — TASK GOAL COMPLETION  (TGC)", _kv(tgc)),
-        ("TABLE 7 — FACTUAL CORRECTNESS  (exact norm. match)", tbl(factual_df)),
-        ("TABLE 8 — RESPONSE RELEVANCE  (TF-IDF cosine)", tbl(relevance_df)),
-    ])
-
-    print(f"\n{SEP}")
-    print("  GLOBAL SUMMARY")
-    print(SEP)
-    print(tbl(summary_df))
-
-    if not nlp_df.empty:
-        print(f"\n{SEP}")
-        print("  NLP METRICS PER FREE-TEXT FIELD")
-        print(SEP)
-        print(tbl(nlp_df))
-
-    print(f"\n{SEP}")
-    print("  FACTUAL CORRECTNESS PER COLUMN")
-    print(SEP)
-    print(tbl(factual_df))
-    print()
+    result = run_single_evaluation(run_info, out_base, report_path_override=out_path)
+    print(tbl(result))
 
 
 if __name__ == "__main__":

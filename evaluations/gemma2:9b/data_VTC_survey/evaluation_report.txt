@@ -1,0 +1,424 @@
+
+================================================================================
+HEADER
+================================================================================
+Model   : gemma2:9b
+Dataset : data_VTC_survey
+Results : 20260510_0726_results.csv
+Oracle  : sampled_oracle.csv
+Log     : log.txt
+--------------------------------------------------------------------------------
+
+================================================================================
+TABLE 0 — GLOBAL SUMMARY
+================================================================================
+Category         Metric                      Value
+---------------  --------------------------  ----------------------------
+Run Info         Model                       ollama/gemma2:9b
+Run Info         Temperature                 0.2
+Run Info         N Agents                    200
+Run Info         Duration (h)                5.89
+Run Info         Start Time                  2026-05-10 07:26:18
+Run Info         End Time                    2026-05-10 13:19:53
+Run Info         Sample Size                 200
+Run Info         Batch Size                  10
+Run Info         Source                      GENERIC
+Run Info         Sim Year                    2019
+Columns          Matched (results<->oracle)  136
+Columns          -> Categorical              67
+Columns          -> Numeric                  0
+Columns          -> Free-text                0
+------------     ----------------------      ----------------------------
+Entropy          Oracle Median               0.8601
+Entropy          Agent Median                0.657
+Entropy          Agent Mean                  0.6224
+KL Divergence    Median KL                   3.6462
+KL Divergence    Mean KL                     4.1845
+------------     ----------------------      ----------------------------
+NLP - BLEU       Corpus BLEU                 0.0002
+NLP - ROUGE      ROUGE-1                     0.0015
+NLP - ROUGE      ROUGE-2                     0.0002
+NLP - ROUGE      ROUGE-L                     0.0014
+NLP - METEOR     METEOR                      0.0004
+NLP - BERTScore  F1                          0.8843
+------------     ----------------------      ----------------------------
+Task Metrics     Success Rate (SR)           1.0
+Task Metrics     N Successful / N Total      200 / 200
+Task Metrics     Avg Field Coverage          1.0
+Task Metrics     Task Goal Completion        0.3883
+Task Metrics     Median TGC                  0.3806
+------------     ----------------------      ----------------------------
+Factual          Global Accuracy             0.6045
+Factual          Median Accuracy             0.6579
+Relevance        Global Mean (TF-IDF)        0.0
+Relevance        Global Median (TF-IDF)      0.0
+
+================================================================================
+COLUMN CLASSIFICATION  (auto-inferred from data)
+================================================================================
+Categorical      (67): ['genre', 'diplome', 'situation_professionnelle', 'csp', 'compo_menage', 'date_der_dep_vtc', 'der_dep_vtc_agglo_res_on', 'agglo_der_dep', 'app_der_dep_vtc_on', 'app_der_dep_vtc', 'nb_voitures', 'nb_voitures_hybride_ou_elec', 'nb_2rm', 'nb_velo_meca', 'permis_conduire_1', 'temps_marche_bus', 'temps_marche_tram', 'temps_marche_metro', 'temps_marche_gare', 'abo_tc', 'velo_trott_lld', 'vtc_dispo', 'taxi_dispo', 'freq_marche', 'freq_vp_cond', 'freq_vp_passager', 'freq_voit_loc', 'freq_drm_partage', 'freq_velo_perso', 'freq_velo_partage', 'freq_trott_partage', 'freq_tc', 'freq_taxi', 'freq_vtc', 'freq_maas', 'motif_der_dep_vtc', 'prix_der_dep_vtc', 'duree_der_dep_vtc', 'quels_modes_de_transport_avez-vous_utili1', 'renoncement_der_dep_vtc', 'report_modal_der_dep_vtc', 'raison_vtc_der_dep_vtc1', 'raison_vtc_der_dep_vtc2', 'raison_vtc_der_dep_vtc3', 'raison_non_usage_vtc1', 'raison_non_usage_vtc2', 'raison_non_usage_vtc3', 'raison_non_usage_vtc_depuis_der_dep1', 'raison_non_usage_vtc_depuis_der_dep2', 'services_vtc_potentiels1', 'services_vtc_potentiels2', 'services_vtc_potentiels3', 'future_mobilite_envisagee', 'raison_demoto_circulation', 'raison_demoto_stationnement', 'raison_demoto_changement', 'raison_demoto_moyens_financiers', 'raison_demoto_panne_ou_trop_vieux', 'raison_demoto_pref_tc', 'aire_urbaine_demenagement_potentiel', 'situation_agglo_demenagement_potentiel', 'tc_destination_demenagement_potentiel', 'zfe_adaptation1', 'revenus', 'cat_csp', 'cat_age', 'cat_aire_urbaine']
+Numeric          (0):     []
+Free-text        (0):   []
+Entropy/KL cols  (67):  ['genre', 'diplome', 'situation_professionnelle', 'csp', 'compo_menage', 'date_der_dep_vtc', 'der_dep_vtc_agglo_res_on', 'agglo_der_dep', 'app_der_dep_vtc_on', 'app_der_dep_vtc', 'nb_voitures', 'nb_voitures_hybride_ou_elec', 'nb_2rm', 'nb_velo_meca', 'permis_conduire_1', 'temps_marche_bus', 'temps_marche_tram', 'temps_marche_metro', 'temps_marche_gare', 'abo_tc', 'velo_trott_lld', 'vtc_dispo', 'taxi_dispo', 'freq_marche', 'freq_vp_cond', 'freq_vp_passager', 'freq_voit_loc', 'freq_drm_partage', 'freq_velo_perso', 'freq_velo_partage', 'freq_trott_partage', 'freq_tc', 'freq_taxi', 'freq_vtc', 'freq_maas', 'motif_der_dep_vtc', 'prix_der_dep_vtc', 'duree_der_dep_vtc', 'quels_modes_de_transport_avez-vous_utili1', 'renoncement_der_dep_vtc', 'report_modal_der_dep_vtc', 'raison_vtc_der_dep_vtc1', 'raison_vtc_der_dep_vtc2', 'raison_vtc_der_dep_vtc3', 'raison_non_usage_vtc1', 'raison_non_usage_vtc2', 'raison_non_usage_vtc3', 'raison_non_usage_vtc_depuis_der_dep1', 'raison_non_usage_vtc_depuis_der_dep2', 'services_vtc_potentiels1', 'services_vtc_potentiels2', 'services_vtc_potentiels3', 'future_mobilite_envisagee', 'raison_demoto_circulation', 'raison_demoto_stationnement', 'raison_demoto_changement', 'raison_demoto_moyens_financiers', 'raison_demoto_panne_ou_trop_vieux', 'raison_demoto_pref_tc', 'aire_urbaine_demenagement_potentiel', 'situation_agglo_demenagement_potentiel', 'tc_destination_demenagement_potentiel', 'zfe_adaptation1', 'revenus', 'cat_csp', 'cat_age', 'cat_aire_urbaine']
+
+
+================================================================================
+TABLE 1 — NORMALIZED SHANNON ENTROPY
+================================================================================
+Variable                                     # Categories    Entropy (Oracle)    Entropy (Agent)    Delta Entropy
+-----------------------------------------  --------------  ------------------  -----------------  ---------------
+genre                                                   3              0.6606             0.6606           0
+diplome                                                10              0.9048             0.9078           0.003
+situation_professionnelle                               6              0.8601             0.8773           0.0172
+csp                                                     6              0.9575             0.8726          -0.0849
+compo_menage                                            6              0.7831             0.8603           0.0771
+date_der_dep_vtc                                        3              0.8037             0.5609          -0.2428
+der_dep_vtc_agglo_res_on                                2              0.7755             0.5148          -0.2607
+agglo_der_dep                                           9              0.7009             0.7024           0.0015
+app_der_dep_vtc_on                                      3              0.6593             0.8726           0.2133
+app_der_dep_vtc                                         8              0.5642             0.8293           0.2652
+nb_voitures                                             4              0.923              0.7036          -0.2194
+nb_voitures_hybride_ou_elec                             3              0.4355             0.7894           0.3539
+nb_2rm                                                  4              0.4515             0.6344           0.1829
+nb_velo_meca                                            4              0.9134             0.6858          -0.2276
+permis_conduire_1                                       3              0.8145             0.6442          -0.1704
+temps_marche_bus                                        6              0.7459             0.5843          -0.1617
+temps_marche_tram                                       6              0.5658             0.5755           0.0097
+temps_marche_metro                                      6              0.4538             0.6106           0.1567
+temps_marche_gare                                       6              0.9474             0.559           -0.3884
+abo_tc                                                  3              0.8263             0.6803          -0.146
+velo_trott_lld                                          2              0.1414             0.0808          -0.0606
+vtc_dispo                                               4              0.8472             0.5416          -0.3056
+taxi_dispo                                              3              0.8749             0.4453          -0.4295
+freq_marche                                             7              0.886              0.6117          -0.2743
+freq_vp_cond                                            7              0.5398             0.3065          -0.2333
+freq_vp_passager                                        7              0.9067             0.3997          -0.507
+freq_voit_loc                                           5              0.3882             0.6053           0.2171
+freq_drm_partage                                        3              0.2522             0.6663           0.4141
+freq_velo_perso                                         7              0.933              0.7498          -0.1832
+freq_velo_partage                                       7              0.2515             0.7361           0.4847
+freq_trott_partage                                      7              0.2001             0.7441           0.544
+freq_tc                                                 7              0.9015             0.5902          -0.3112
+freq_taxi                                               6              0.5125             0.5559           0.0434
+freq_vtc                                                7              0.4529             0.5794           0.1266
+freq_maas                                               7              0.9745             0.6369          -0.3375
+motif_der_dep_vtc                                       8              0.8174             0.1421          -0.6752
+prix_der_dep_vtc                                        8              0.9719             0.5911          -0.3808
+duree_der_dep_vtc                                       6              0.9256             0.5431          -0.3825
+quels_modes_de_transport_avez-vous_utili1               7              0.8706             0.5711          -0.2995
+renoncement_der_dep_vtc                                 3              0.7834             0.8489           0.0655
+report_modal_der_dep_vtc                                7              0.8516             0.5076          -0.344
+raison_vtc_der_dep_vtc1                                 7              0.9843             0.2312          -0.7531
+raison_vtc_der_dep_vtc2                                 6              0.9674             0.0796          -0.8878
+raison_vtc_der_dep_vtc3                                 5              0.9964             0.0796          -0.9168
+raison_non_usage_vtc1                                   8              0.8763             0.657           -0.2193
+raison_non_usage_vtc2                                   8              0.829              0.6635          -0.1655
+raison_non_usage_vtc3                                   7              0.8812             0.6635          -0.2177
+raison_non_usage_vtc_depuis_der_dep1                    8              0.886              0.659           -0.227
+raison_non_usage_vtc_depuis_der_dep2                    6              0.7734             0.5805          -0.1928
+services_vtc_potentiels1                                8              0.9147             0.7893          -0.1254
+services_vtc_potentiels2                                7              0.9428             0.7856          -0.1572
+services_vtc_potentiels3                                7              0.9385             0.7856          -0.1529
+future_mobilite_envisagee                               7              0.7474             0.7092          -0.0382
+raison_demoto_circulation                               5              0.8577             0.5974          -0.2603
+raison_demoto_stationnement                             5              0.8055             0.7233          -0.0822
+raison_demoto_changement                                5              0.8414             0.6574          -0.184
+raison_demoto_moyens_financiers                         5              0.8911             0.5426          -0.3484
+raison_demoto_panne_ou_trop_vieux                       5              0.9568             0.5384          -0.4184
+raison_demoto_pref_tc                                   5              0.8649             0.1572          -0.7078
+aire_urbaine_demenagement_potentiel                     5              0.9773             0.9667          -0.0106
+situation_agglo_demenagement_potentiel                  5              0.9218             0.7878          -0.134
+tc_destination_demenagement_potentiel                   4              0.9924             0.7038          -0.2886
+zfe_adaptation1                                         8              0.8758             0.2606          -0.6151
+revenus                                                14              0.859              0.8664           0.0074
+cat_csp                                                 9              0.903              0.7946          -0.1084
+cat_age                                                 5              0.9351             0.9351           0
+cat_aire_urbaine                                        4              0.9538             0.9091          -0.0447
+
+================================================================================
+TABLE 2 — KL DIVERGENCE  P(Oracle) || Q(Agent)
+================================================================================
+Variable                                     KL Divergence (Oracle || Agent)  Rating
+-----------------------------------------  ---------------------------------  --------------
+genre                                                                 0       approx_perfect
+diplome                                                               2.1147  poor
+situation_professionnelle                                             0.0087  approx_perfect
+csp                                                                   6.4465  poor
+compo_menage                                                          0.2086  good
+date_der_dep_vtc                                                      0.7689  moderate
+der_dep_vtc_agglo_res_on                                              1.1588  moderate
+agglo_der_dep                                                         1.0575  moderate
+app_der_dep_vtc_on                                                    0.0719  good
+app_der_dep_vtc                                                       3.6462  poor
+nb_voitures                                                           2.5013  poor
+nb_voitures_hybride_ou_elec                                           0.23    good
+nb_2rm                                                                0.1378  good
+nb_velo_meca                                                          4.7541  poor
+permis_conduire_1                                                    14.0255  poor
+temps_marche_bus                                                      8.7421  poor
+temps_marche_tram                                                     2.2621  poor
+temps_marche_metro                                                    2.8018  poor
+temps_marche_gare                                                     1.377   moderate
+abo_tc                                                                0.2803  good
+velo_trott_lld                                                        0.0039  approx_perfect
+vtc_dispo                                                             5.6153  poor
+taxi_dispo                                                            0.3005  good
+freq_marche                                                           8.7816  poor
+freq_vp_cond                                                         13.2954  poor
+freq_vp_passager                                                      7.4603  poor
+freq_voit_loc                                                         3.8453  poor
+freq_drm_partage                                                      2.4831  poor
+freq_velo_perso                                                       1.6806  poor
+freq_velo_partage                                                     2.2218  poor
+freq_trott_partage                                                    2.5321  poor
+freq_tc                                                               7.4325  poor
+freq_taxi                                                             3.586   poor
+freq_vtc                                                              2.9212  poor
+freq_maas                                                             3.8642  poor
+motif_der_dep_vtc                                                     7.9859  poor
+prix_der_dep_vtc                                                      7.6738  poor
+duree_der_dep_vtc                                                     4.8365  poor
+quels_modes_de_transport_avez-vous_utili1                             5.1692  poor
+renoncement_der_dep_vtc                                               0.2553  good
+report_modal_der_dep_vtc                                              8.5191  poor
+raison_vtc_der_dep_vtc1                                               8.8624  poor
+raison_vtc_der_dep_vtc2                                               9.2422  poor
+raison_vtc_der_dep_vtc3                                               9.8124  poor
+raison_non_usage_vtc1                                                 6.8843  poor
+raison_non_usage_vtc2                                                 3.8624  poor
+raison_non_usage_vtc3                                                 6.1144  poor
+raison_non_usage_vtc_depuis_der_dep1                                  4.6113  poor
+raison_non_usage_vtc_depuis_der_dep2                                  1.2436  moderate
+services_vtc_potentiels1                                              2.774   poor
+services_vtc_potentiels2                                              5.294   poor
+services_vtc_potentiels3                                              6.0871  poor
+future_mobilite_envisagee                                             2.3297  poor
+raison_demoto_circulation                                             2.2247  poor
+raison_demoto_stationnement                                           8.2365  poor
+raison_demoto_changement                                              9.6442  poor
+raison_demoto_moyens_financiers                                       2.6057  poor
+raison_demoto_panne_ou_trop_vieux                                     8.2138  poor
+raison_demoto_pref_tc                                                10.1011  poor
+aire_urbaine_demenagement_potentiel                                   4.3787  poor
+situation_agglo_demenagement_potentiel                                0.0954  good
+tc_destination_demenagement_potentiel                                 4.2103  poor
+zfe_adaptation1                                                       6.2943  poor
+revenus                                                               0.3824  good
+cat_csp                                                               3.7744  poor
+cat_age                                                               0       approx_perfect
+cat_aire_urbaine                                                      0.0255  approx_perfect
+
+================================================================================
+TABLE 3 — NUMERIC VARIABLE COMPARISON
+================================================================================
+(no data)
+
+================================================================================
+TABLE 4 — NLP METRICS PER FREE-TEXT FIELD
+           BLEU / ROUGE / METEOR / BERTScore
+================================================================================
+Field                                      BLEU    ROUGE-1    ROUGE-2    ROUGE-L    METEOR      BERTScore F1
+-----------------------------------------  ------  ---------  ---------  ---------  --------  --------------
+abo_tc                                     —       —          —          —          —                 0.9142
+accompagnement_proche                      —       —          —          —          —                 0.8822
+aeroport                                   —       —          —          —          —                 0.8737
+age                                        —       —          —          —          —                 0.9512
+agglo_der_dep                              —       —          —          —          —                 0.8945
+aire_urbaine_demenagement_potentiel        —       —          —          —          —                 0.9269
+app_der_dep_vtc                            —       —          —          —          —                 0.8429
+app_der_dep_vtc_on                         —       —          —          —          —                 0.9573
+avis_prix_estime_trajet_taxi_20min         —       —          —          —          —                 0.8534
+avis_prix_estime_trajet_vtc_20min          —       —          —          —          —                 0.8664
+cat_age                                    —       —          —          —          —                 1
+cat_aire_urbaine                           —       —          —          —          —                 0.9896
+cat_csp                                    —       —          —          —          —                 0.9375
+compo_menage                               —       —          —          —          —                 0.9626
+compo_menage_autre                         0.0012  0.0138     0.0019     0.0121     0.0014            0.7921
+courses_conventionnees                     —       —          —          —          —                 0.8673
+courses_ou_achats                          —       —          —          —          —                 0.84
+csp                                        —       —          —          —          —                 0.9403
+date_der_dep_vtc                           —       —          —          —          —                 0.8804
+demarches_admin                            —       —          —          —          —                 0.8455
+demenagement_potentiel                     —       —          —          —          —                 0.9168
+demotorisation_potentielle                 —       —          —          —          —                 0.9316
+dep_pro                                    —       —          —          —          —                 0.856
+der_dep_vtc_agglo_res_on                   —       —          —          —          —                 0.8998
+diplome                                    —       —          —          —          —                 0.9714
+duree_der_dep_vtc                          —       —          —          —          —                 0.9135
+freq_drm_partage                           —       —          —          —          —                 0.8459
+freq_maas                                  —       —          —          —          —                 0.9081
+freq_marche                                —       —          —          —          —                 0.8971
+freq_taxi                                  —       —          —          —          —                 0.8633
+freq_tc                                    —       —          —          —          —                 0.8864
+freq_trott_partage                         —       —          —          —          —                 0.8577
+freq_velo_partage                          —       —          —          —          —                 0.8561
+freq_velo_perso                            —       —          —          —          —                 0.9067
+freq_voit_loc                              —       —          —          —          —                 0.8575
+freq_vp_cond                               —       —          —          —          —                 0.8693
+freq_vp_passager                           —       —          —          —          —                 0.8927
+freq_vtc                                   —       —          —          —          —                 0.8637
+future_mobilite_envisagee                  —       —          —          —          —                 0.8801
+gare_ou_tc                                 —       —          —          —          —                 0.8694
+genre                                      —       —          —          —          —                 1
+loisir                                     —       —          —          —          —                 0.8658
+motif_der_dep_vtc                          —       —          —          —          —                 0.8098
+nb_2rm                                     —       —          —          —          —                 0.9239
+nb_enfants_menage                          —       —          —          —          —                 0.7779
+nb_enfants_menage_14                       —       —          —          —          —                 0.7766
+nb_pers_menage                             —       —          —          —          —                 0.7886
+nb_trot_elec                               —       —          —          —          —                 0.9507
+nb_trot_meca                               —       —          —          —          —                 0.9279
+nb_velo_elec                               —       —          —          —          —                 0.923
+nb_velo_meca                               —       —          —          —          —                 0.8938
+nb_voitures                                —       —          —          —          —                 0.855
+nb_voitures_hybride_ou_elec                —       —          —          —          —                 0.9176
+permis_conduire_1                          —       —          —          —          —                 0.8829
+permis_conduire_2                          —       —          —          —          —                 0.849
+poids_redressement                         0       0.0        0.0        0.0        0.0               0.7673
+prix_der_dep_vtc                           —       —          —          —          —                 0.9104
+prix_estime_trajet_taxi_20min              0       0.0        0.0        0.0        0.0               0.7879
+prix_estime_trajet_vtc_20min               0       0.0        0.0        0.0        0.0               0.7888
+quels_modes_de_transport_avez-vous_utili1  —       —          —          —          —                 0.848
+raison_demoto_changement                   —       —          —          —          —                 0.8993
+raison_demoto_circulation                  —       —          —          —          —                 0.9015
+raison_demoto_moyens_financiers            —       —          —          —          —                 0.9001
+raison_demoto_panne_ou_trop_vieux          —       —          —          —          —                 0.9139
+raison_demoto_pref_mobilite_partagee       —       —          —          —          —                 0.9009
+raison_demoto_pref_taxi_ou_vtc             —       —          —          —          —                 0.8954
+raison_demoto_pref_tc                      —       —          —          —          —                 0.9095
+raison_demoto_pref_velo_ou_marche          —       —          —          —          —                 0.912
+raison_demoto_stationnement                —       —          —          —          —                 0.9018
+raison_non_usage_vtc1                      —       —          —          —          —                 0.8615
+raison_non_usage_vtc2                      —       —          —          —          —                 0.8804
+raison_non_usage_vtc3                      —       —          —          —          —                 0.8548
+raison_non_usage_vtc_depuis_der_de_autre   —       —          —          —          —                 0.778
+raison_non_usage_vtc_depuis_der_dep1       —       —          —          —          —                 0.8661
+raison_non_usage_vtc_depuis_der_dep2       —       —          —          —          —                 0.9055
+raison_vtc_der_dep_vtc1                    —       —          —          —          —                 0.8824
+raison_vtc_der_dep_vtc2                    —       —          —          —          —                 0.9083
+raison_vtc_der_dep_vtc3                    —       —          —          —          —                 0.8993
+raisons_usagevtc_potentiel1                —       —          —          —          —                 0.8417
+raisons_usagevtc_potentiel2                —       —          —          —          —                 0.8705
+raisons_usagevtc_potentiel3                —       —          —          —          —                 0.8532
+raisons_usagevtc_potentiel_autre           0.0016  0.013      0.0        0.013      0.0005            0.7787
+renoncement_der_dep_vtc                    —       —          —          —          —                 0.9013
+report_modal_der_dep_vtc                   —       —          —          —          —                 0.8418
+revenus                                    —       —          —          —          —                 0.9839
+services_vtc_potentiels1                   —       —          —          —          —                 0.8455
+services_vtc_potentiels2                   —       —          —          —          —                 0.8232
+services_vtc_potentiels3                   —       —          —          —          —                 0.8222
+situation_agglo_demenagement_potentiel     —       —          —          —          —                 0.9193
+situation_professionnelle                  —       —          —          —          —                 0.9926
+taxi_dispo                                 —       —          —          —          —                 0.8994
+tc_destination_demenagement_potentiel      —       —          —          —          —                 0.8418
+temps_marche_bus                           —       —          —          —          —                 0.9031
+temps_marche_gare                          —       —          —          —          —                 0.9057
+temps_marche_metro                         —       —          —          —          —                 0.8265
+temps_marche_tram                          —       —          —          —          —                 0.8295
+trajet_domtrav_dometudes                   —       —          —          —          —                 0.8567
+velo_trott_lld                             —       —          —          —          —                 0.9959
+visite_proche                              —       —          —          —          —                 0.8599
+voyage_mode_principal                      —       —          —          —          —                 0.8592
+vtc_dispo                                  —       —          —          —          —                 0.8328
+zfe_adaptation1                            —       —          —          —          —                 0.8546
+zfe_on                                     —       —          —          —          —                 0.849
+
+================================================================================
+TABLE 5 — SUCCESS RATE  (SR)
+================================================================================
+  Success Rate (SR)                        1.0
+  SR Threshold                             0.7
+  N Agents                                 200
+  N Successful                             200
+  Avg Field Coverage                       1.0
+  Min Field Coverage                       1.0
+  Max Field Coverage                       1.0
+
+================================================================================
+TABLE 6 — TASK GOAL COMPLETION  (TGC)
+================================================================================
+  Task Goal Completion (TGC)               0.3883
+  Median TGC                               0.3806
+  Std TGC                                  0.0937
+  Min TGC                                  0.209
+  Max TGC                                  0.6716
+  Cols evaluated                           67
+  Total weight                             67.0
+
+================================================================================
+TABLE 7 — FACTUAL CORRECTNESS  (exact norm. match)
+================================================================================
+Field                                        Accuracy    N (oracle)
+-----------------------------------------  ----------  ------------
+genre                                          1                200
+raison_vtc_der_dep_vtc3                        1                 23
+cat_age                                        1                200
+aire_urbaine_demenagement_potentiel            1                 86
+cat_aire_urbaine                               1                200
+situation_professionnelle                      0.97             200
+velo_trott_lld                                 0.97             200
+diplome                                        0.95             200
+revenus                                        0.945            200
+situation_agglo_demenagement_potentiel         0.9365            63
+csp                                            0.9323           133
+raison_demoto_pref_tc                          0.9216            51
+raison_demoto_changement                       0.902             51
+temps_marche_bus                               0.89             200
+raison_vtc_der_dep_vtc2                        0.8824            34
+raison_demoto_stationnement                    0.8824            51
+raison_demoto_panne_ou_trop_vieux              0.8824            51
+raison_demoto_circulation                      0.8431            51
+raison_demoto_moyens_financiers                0.8431            51
+motif_der_dep_vtc                              0.8286            70
+temps_marche_gare                              0.8              200
+raison_non_usage_vtc3                          0.8               35
+duree_der_dep_vtc                              0.8               70
+cat_csp                                        0.79             200
+raison_non_usage_vtc1                          0.7829           129
+agglo_der_dep                                  0.7818            55
+compo_menage                                   0.775            200
+raison_non_usage_vtc2                          0.7538            65
+raison_non_usage_vtc_depuis_der_dep2           0.75              28
+prix_der_dep_vtc                               0.7429            70
+app_der_dep_vtc_on                             0.7429            70
+raison_vtc_der_dep_vtc1                        0.6809            47
+freq_maas                                      0.68             200
+freq_velo_perso                                0.6579           114
+nb_2rm                                         0.65             200
+nb_voitures_hybride_ou_elec                    0.59             200
+permis_conduire_1                              0.56             200
+freq_vp_passager                               0.56             200
+future_mobilite_envisagee                      0.55             200
+freq_marche                                    0.525            200
+taxi_dispo                                     0.505            200
+freq_tc                                        0.485            200
+raison_non_usage_vtc_depuis_der_dep1           0.4714            70
+date_der_dep_vtc                               0.47             200
+abo_tc                                         0.47             200
+zfe_adaptation1                                0.4474            38
+nb_velo_meca                                   0.41             200
+tc_destination_demenagement_potentiel          0.3953            86
+renoncement_der_dep_vtc                        0.3857            70
+vtc_dispo                                      0.38             200
+temps_marche_tram                              0.33             200
+temps_marche_metro                             0.32             200
+freq_vp_cond                                   0.3071           140
+services_vtc_potentiels1                       0.3              200
+der_dep_vtc_agglo_res_on                       0.2714            70
+freq_vtc                                       0.265            200
+freq_taxi                                      0.265            200
+nb_voitures                                    0.24             200
+services_vtc_potentiels2                       0.2079           101
+freq_voit_loc                                  0.1753           154
+services_vtc_potentiels3                       0.1746            63
+freq_velo_partage                              0.165            200
+freq_trott_partage                             0.16             200
+quels_modes_de_transport_avez-vous_utili1      0.1429            70
+report_modal_der_dep_vtc                       0.1064            47
+freq_drm_partage                               0.0625            32
+app_der_dep_vtc                                0.0392            51
+
+================================================================================
+TABLE 8 — RESPONSE RELEVANCE  (TF-IDF cosine)
+================================================================================
+(no data)

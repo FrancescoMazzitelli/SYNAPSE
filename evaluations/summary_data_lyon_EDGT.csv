@@ -1,9 +1,9 @@
-model,dataset,n_agents,n_matched_cols,n_categorical,n_numeric,n_free_text,entropy_oracle_median,entropy_agent_median,kl_median,bleu_global,rouge1,rouge2,rougeL,meteor,bertscore_f1,success_rate,avg_field_coverage,tgc,median_tgc,factual_accuracy,median_factual_accuracy,relevance_mean,relevance_median,report_path,error
-gemma2:27b,data_lyon_EDGT,200,229,10,19,0,0.8248,0.1955,4.1973,0,0.0,0.0,0.0,0.0,0.8537,1.0,0.9993,0.4177,0.3946,0.4571,0.5682,0.0,0.0,evaluations/gemma2:27b/data_lyon_EDGT/evaluation_report.txt,
-gemma2:9b,data_lyon_EDGT,200,229,27,44,0,0.8009,0.5712,1.3725,0,0.0,0.0,0.0,0.0,0.8668,1.0,0.9877,0.3643,0.3649,0.3493,0.2727,0.0,0.0,evaluations/gemma2:9b/data_lyon_EDGT/evaluation_report.txt,
-gemma3:27b,data_lyon_EDGT,200,229,19,21,0,0.8238,0.488,5.0471,0,0.0,0.0,0.0,0.0,0.8478,1.0,1.0,0.3328,0.3233,0.3365,0.0909,0.0,0.0,evaluations/gemma3:27b/data_lyon_EDGT/evaluation_report.txt,
-gpt-oss:20b,data_lyon_EDGT,200,229,29,48,0,0.8103,0.602,0.6779,0,0.0,0.0,0.0,0.0,0.8521,1.0,0.9703,0.37,0.368,0.2919,0.2273,0.0,0.0,evaluations/gpt-oss:20b/data_lyon_EDGT/evaluation_report.txt,
-llama3.1:8b,data_lyon_EDGT,200,229,24,37,0,0.7671,0.6115,1.2546,0,0.0,0.0,0.0,0.0,0.8484,1.0,0.9998,0.3535,0.3483,0.3512,0.3409,0.0,0.0,evaluations/llama3.1:8b/data_lyon_EDGT/evaluation_report.txt,
-llama3.3:70b,data_lyon_EDGT,200,229,27,42,0,0.8009,0.549,0.8202,0,0.0,0.0,0.0,0.0,0.8512,1.0,0.9976,0.3637,0.3572,0.328,0.2632,0.0,0.0,evaluations/llama3.3:70b/data_lyon_EDGT/evaluation_report.txt,
-mistral-nemo:12b,data_lyon_EDGT,200,229,30,40,0,0.813,0.6301,1.079,0,0.0,0.0,0.0,0.0,0.8516,1.0,0.9996,0.3262,0.3217,0.2969,0.1971,0.0,0.0,evaluations/mistral-nemo:12b/data_lyon_EDGT/evaluation_report.txt,
-mistral:7b,data_lyon_EDGT,,,,,,,,,,,,,,,,,,,,,,,,[Errno 2] No such file or directory: 'results/mistral:7b/data_lyon_EDGT/20260618_1056_results.csv'
+model,dataset,n_agents,n_matched_cols,n_categorical,n_numeric,n_free_text,entropy_oracle_median,entropy_agent_median,kl_median,bleu_global,rouge1,rouge2,rougeL,meteor,bertscore_f1,success_rate,avg_field_coverage,tgc,median_tgc,factual_accuracy,median_factual_accuracy,relevance_mean,relevance_median,report_path
+gemma2:27b,data_lyon_EDGT,200,229,10,20,0,0.7807,0.2302,4.5535,0.0,0.0,0.0,0.0,0.0,0.8537,1.0,0.9993,0.4198,0.4036,0.4571,0.5682,0.0,0.0,evaluations/gemma2:27b/data_lyon_EDGT/evaluation_report.txt
+gemma2:9b,data_lyon_EDGT,200,229,28,46,0,0.7807,0.571,1.3195,0.0,0.0,0.0,0.0,0.0,0.8655,1.0,0.988,0.3636,0.3618,0.3477,0.3338,0.0,0.0,evaluations/gemma2:9b/data_lyon_EDGT/evaluation_report.txt
+gemma3:27b,data_lyon_EDGT,200,229,20,18,0,0.7807,0.4682,4.7945,0.0,0.0,0.0,0.0,0.0,0.8474,1.0,1.0,0.3313,0.3172,0.3639,0.2583,0.0,0.0,evaluations/gemma3:27b/data_lyon_EDGT/evaluation_report.txt
+gpt-oss:20b,data_lyon_EDGT,200,229,34,46,0,0.7807,0.5995,0.9704,0.0,0.0,0.0,0.0,0.0,0.85,1.0,0.9714,0.3543,0.3555,0.3071,0.2318,0.0,0.0,evaluations/gpt-oss:20b/data_lyon_EDGT/evaluation_report.txt
+llama3.1:8b,data_lyon_EDGT,200,229,26,37,1,0.7807,0.5953,1.1776,0.0,0.0051,0.0,0.0051,0.0024,0.8477,1.0,0.9998,0.3492,0.344,0.3371,0.2727,0.17,0.0,evaluations/llama3.1:8b/data_lyon_EDGT/evaluation_report.txt
+llama3.3:70b,data_lyon_EDGT,200,229,29,44,0,0.7807,0.5463,0.9761,0.0,0.0,0.0,0.0,0.0,0.851,1.0,0.9977,0.365,0.3601,0.3259,0.2632,0.0,0.0,evaluations/llama3.3:70b/data_lyon_EDGT/evaluation_report.txt
+mistral-nemo:12b,data_lyon_EDGT,200,229,31,45,0,0.7807,0.6138,1.0286,0.0,0.0,0.0,0.0,0.0,0.8514,1.0,0.9997,0.3449,0.3432,0.3067,0.2273,0.0,0.0,evaluations/mistral-nemo:12b/data_lyon_EDGT/evaluation_report.txt
+mistral:7b,data_lyon_EDGT,200,229,36,39,0,0.7807,0.5842,2.0322,0.0,0.0,0.0,0.0,0.0,0.857,1.0,0.966,0.3096,0.3126,0.267,0.195,0.0,0.0,evaluations/mistral:7b/data_lyon_EDGT/evaluation_report.txt
