@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+gemma2:27b,data_VTC_survey,accuracy,2.85,0.84,3.0,1,5,27200,"1: 3800, 3: 20349, 4: 2470, 5: 581"
+gemma2:27b,data_VTC_survey,relevance,2.85,0.84,3.0,1,5,27200,"1: 3800, 3: 20349, 4: 2470, 5: 581"
+gemma2:27b,data_VTC_survey,coherence,2.85,0.84,3.0,1,5,27200,"1: 3800, 3: 20349, 4: 2470, 5: 581"
+gemma2:27b,data_VTC_survey,completeness,3.6,1.06,4.0,1,5,27200,"1: 3800, 4: 22819, 5: 581"
+gemma2:27b,data_VTC_survey,fluency,3.88,0.38,4.0,3,5,27200,"3: 3800, 4: 22819, 5: 581"

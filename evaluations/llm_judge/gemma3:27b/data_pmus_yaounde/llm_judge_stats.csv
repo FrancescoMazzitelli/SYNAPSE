@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+gemma3:27b,data_pmus_yaounde,accuracy,3.17,0.53,3.0,1,5,6800,"1: 20, 3: 5980, 4: 400, 5: 400"
+gemma3:27b,data_pmus_yaounde,relevance,3.17,0.53,3.0,1,5,6800,"1: 20, 3: 5980, 4: 400, 5: 400"
+gemma3:27b,data_pmus_yaounde,coherence,3.17,0.53,3.0,1,5,6800,"1: 20, 3: 5980, 4: 400, 5: 400"
+gemma3:27b,data_pmus_yaounde,completeness,4.05,0.29,4.0,1,5,6800,"1: 20, 4: 6380, 5: 400"
+gemma3:27b,data_pmus_yaounde,fluency,4.06,0.24,4.0,3,5,6800,"3: 20, 4: 6380, 5: 400"

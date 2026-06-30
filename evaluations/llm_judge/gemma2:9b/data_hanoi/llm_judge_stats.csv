@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+gemma2:9b,data_hanoi,accuracy,3.25,1.25,3.0,1,5,10600,"1: 1681, 3: 5107, 4: 1598, 5: 2214"
+gemma2:9b,data_hanoi,relevance,3.35,1.34,3.0,1,5,10600,"1: 1681, 3: 5107, 4: 598, 5: 3214"
+gemma2:9b,data_hanoi,coherence,3.35,1.34,3.0,1,5,10600,"1: 1681, 3: 5107, 4: 598, 5: 3214"
+gemma2:9b,data_hanoi,completeness,3.83,1.3,4.0,1,5,10600,"1: 1681, 4: 5705, 5: 3214"
+gemma2:9b,data_hanoi,fluency,4.14,0.66,4.0,3,5,10600,"3: 1681, 4: 5705, 5: 3214"

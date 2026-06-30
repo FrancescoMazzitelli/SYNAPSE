@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+mistral:7b,data_hanoi,accuracy,2.9,1.28,3.0,1,5,10600,"1: 2532, 3: 5739, 4: 686, 5: 1643"
+mistral:7b,data_hanoi,relevance,2.92,1.3,3.0,1,5,10600,"1: 2532, 3: 5739, 4: 486, 5: 1843"
+mistral:7b,data_hanoi,coherence,2.92,1.3,3.0,1,5,10600,"1: 2532, 3: 5739, 4: 486, 5: 1843"
+mistral:7b,data_hanoi,completeness,3.46,1.42,4.0,1,5,10600,"1: 2532, 4: 6225, 5: 1843"
+mistral:7b,data_hanoi,fluency,3.94,0.64,4.0,3,5,10600,"3: 2532, 4: 6225, 5: 1843"

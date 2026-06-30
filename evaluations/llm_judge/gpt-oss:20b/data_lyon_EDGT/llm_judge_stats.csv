@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+gpt-oss:20b,data_lyon_EDGT,accuracy,2.69,1.95,1.0,1,5,45800,"1: 25830, 3: 1213, 5: 18757"
+gpt-oss:20b,data_lyon_EDGT,relevance,2.69,1.95,1.0,1,5,45800,"1: 25830, 3: 1213, 5: 18757"
+gpt-oss:20b,data_lyon_EDGT,coherence,2.69,1.95,1.0,1,5,45800,"1: 25830, 3: 1213, 5: 18757"
+gpt-oss:20b,data_lyon_EDGT,completeness,2.72,1.96,1.0,1,5,45800,"1: 25830, 4: 1213, 5: 18757"
+gpt-oss:20b,data_lyon_EDGT,fluency,3.85,0.97,3.0,3,5,45800,"3: 25830, 4: 1213, 5: 18757"

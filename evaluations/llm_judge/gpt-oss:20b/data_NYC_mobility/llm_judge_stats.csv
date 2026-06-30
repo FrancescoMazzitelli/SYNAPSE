@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+gpt-oss:20b,data_NYC_mobility,accuracy,2.86,0.54,3.0,1,4,35200,"1: 2680, 3: 32187, 4: 333"
+gpt-oss:20b,data_NYC_mobility,relevance,2.86,0.54,3.0,1,4,35200,"1: 2680, 3: 32187, 4: 333"
+gpt-oss:20b,data_NYC_mobility,coherence,2.86,0.54,3.0,1,4,35200,"1: 2680, 3: 32187, 4: 333"
+gpt-oss:20b,data_NYC_mobility,completeness,3.78,0.8,4.0,1,5,35200,"1: 2680, 4: 32327, 5: 193"
+gpt-oss:20b,data_NYC_mobility,fluency,3.92,0.27,4.0,3,4,35200,"3: 2680, 4: 32520"

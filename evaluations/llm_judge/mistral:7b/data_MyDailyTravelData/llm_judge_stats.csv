@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+mistral:7b,data_MyDailyTravelData,accuracy,4.46,1.27,5.0,1,5,36200,"1: 3837, 3: 1858, 4: 460, 5: 30045"
+mistral:7b,data_MyDailyTravelData,relevance,4.46,1.27,5.0,1,5,36200,"1: 3837, 3: 1858, 4: 456, 5: 30049"
+mistral:7b,data_MyDailyTravelData,coherence,4.46,1.27,5.0,1,5,36200,"1: 3837, 3: 1858, 4: 456, 5: 30049"
+mistral:7b,data_MyDailyTravelData,completeness,4.51,1.23,5.0,1,5,36200,"1: 3837, 4: 2314, 5: 30049"
+mistral:7b,data_MyDailyTravelData,fluency,4.72,0.64,5.0,3,5,36200,"3: 3837, 4: 2314, 5: 30049"

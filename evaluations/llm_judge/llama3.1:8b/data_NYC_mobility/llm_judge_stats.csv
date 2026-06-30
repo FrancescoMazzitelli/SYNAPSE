@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+llama3.1:8b,data_NYC_mobility,accuracy,3.04,0.37,3.0,1,4,35200,"1: 601, 3: 32073, 4: 2526"
+llama3.1:8b,data_NYC_mobility,relevance,3.1,0.56,3.0,1,5,35200,"1: 601, 3: 32073, 4: 326, 5: 2200"
+llama3.1:8b,data_NYC_mobility,coherence,3.1,0.56,3.0,1,5,35200,"1: 601, 3: 32073, 4: 326, 5: 2200"
+llama3.1:8b,data_NYC_mobility,completeness,4.02,0.47,4.0,1,5,35200,"1: 601, 4: 32199, 5: 2400"
+llama3.1:8b,data_NYC_mobility,fluency,4.05,0.28,4.0,3,5,35200,"3: 601, 4: 32399, 5: 2200"

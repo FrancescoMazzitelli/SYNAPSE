@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+llama3.1:8b,data_VTC_survey,accuracy,3.13,0.99,3.0,1,5,27200,"1: 3809, 3: 12568, 4: 10395, 5: 428"
+llama3.1:8b,data_VTC_survey,relevance,3.44,1.32,3.0,1,5,27200,"1: 3809, 3: 12568, 4: 2004, 5: 8819"
+llama3.1:8b,data_VTC_survey,coherence,3.44,1.32,3.0,1,5,27200,"1: 3809, 3: 12568, 4: 2004, 5: 8819"
+llama3.1:8b,data_VTC_survey,completeness,3.9,1.26,4.0,1,5,27200,"1: 3809, 4: 14572, 5: 8819"
+llama3.1:8b,data_VTC_survey,fluency,4.18,0.66,4.0,3,5,27200,"3: 3809, 4: 14572, 5: 8819"

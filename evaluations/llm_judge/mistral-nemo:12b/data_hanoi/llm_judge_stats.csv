@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+mistral-nemo:12b,data_hanoi,accuracy,3.09,1.19,3.0,1,5,10600,"1: 1741, 3: 6216, 4: 811, 5: 1832"
+mistral-nemo:12b,data_hanoi,relevance,3.11,1.21,3.0,1,5,10600,"1: 1741, 3: 6216, 4: 611, 5: 2032"
+mistral-nemo:12b,data_hanoi,coherence,3.11,1.21,3.0,1,5,10600,"1: 1741, 3: 6216, 4: 611, 5: 2032"
+mistral-nemo:12b,data_hanoi,completeness,3.7,1.26,4.0,1,5,10600,"1: 1741, 4: 6827, 5: 2032"
+mistral-nemo:12b,data_hanoi,fluency,4.03,0.6,4.0,3,5,10600,"3: 1741, 4: 6827, 5: 2032"

@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+llama3.3:70b,data_MyDailyTravelData,accuracy,4.39,0.82,5.0,1,5,36200,"1: 423, 3: 5429, 4: 9436, 5: 20912"
+llama3.3:70b,data_MyDailyTravelData,relevance,4.65,0.82,5.0,1,5,36200,"1: 423, 3: 5429, 4: 236, 5: 30112"
+llama3.3:70b,data_MyDailyTravelData,coherence,4.65,0.82,5.0,1,5,36200,"1: 423, 3: 5429, 4: 236, 5: 30112"
+llama3.3:70b,data_MyDailyTravelData,completeness,4.8,0.55,5.0,1,5,36200,"1: 423, 4: 5651, 5: 30126"
+llama3.3:70b,data_MyDailyTravelData,fluency,4.82,0.41,5.0,3,5,36200,"3: 423, 4: 5665, 5: 30112"

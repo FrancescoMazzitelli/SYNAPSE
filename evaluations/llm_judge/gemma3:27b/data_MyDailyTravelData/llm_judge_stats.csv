@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+gemma3:27b,data_MyDailyTravelData,accuracy,4.54,0.77,5.0,1,5,36200,"1: 191, 3: 5026, 4: 5738, 5: 25245"
+gemma3:27b,data_MyDailyTravelData,relevance,4.66,0.75,5.0,1,5,36200,"1: 191, 3: 5026, 4: 1338, 5: 29645"
+gemma3:27b,data_MyDailyTravelData,coherence,4.66,0.75,5.0,1,5,36200,"1: 191, 3: 5026, 4: 1338, 5: 29645"
+gemma3:27b,data_MyDailyTravelData,completeness,4.8,0.47,5.0,1,5,36200,"1: 191, 4: 6364, 5: 29645"
+gemma3:27b,data_MyDailyTravelData,fluency,4.81,0.4,5.0,3,5,36200,"3: 191, 4: 6364, 5: 29645"

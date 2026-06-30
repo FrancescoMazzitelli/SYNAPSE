@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+mistral-nemo:12b,data_lyon_EDGT,accuracy,2.8,1.97,1.0,1,5,45800,"1: 24707, 3: 926, 4: 13, 5: 20154"
+mistral-nemo:12b,data_lyon_EDGT,relevance,2.8,1.97,1.0,1,5,45800,"1: 24707, 3: 926, 4: 13, 5: 20154"
+mistral-nemo:12b,data_lyon_EDGT,coherence,2.8,1.97,1.0,1,5,45800,"1: 24707, 3: 926, 4: 13, 5: 20154"
+mistral-nemo:12b,data_lyon_EDGT,completeness,2.82,1.98,1.0,1,5,45800,"1: 24707, 4: 939, 5: 20154"
+mistral-nemo:12b,data_lyon_EDGT,fluency,3.9,0.98,3.0,3,5,45800,"3: 24707, 4: 939, 5: 20154"

@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+gemma2:27b,data_NYC_mobility,accuracy,3.02,0.37,3.0,1,4,35200,"1: 675, 3: 32360, 4: 2165"
+gemma2:27b,data_NYC_mobility,relevance,3.07,0.53,3.0,1,5,35200,"1: 675, 3: 32360, 4: 365, 5: 1800"
+gemma2:27b,data_NYC_mobility,coherence,3.07,0.53,3.0,1,5,35200,"1: 675, 3: 32360, 4: 365, 5: 1800"
+gemma2:27b,data_NYC_mobility,completeness,4.0,0.48,4.0,1,5,35200,"1: 675, 4: 32525, 5: 2000"
+gemma2:27b,data_NYC_mobility,fluency,4.03,0.26,4.0,3,5,35200,"3: 675, 4: 32725, 5: 1800"

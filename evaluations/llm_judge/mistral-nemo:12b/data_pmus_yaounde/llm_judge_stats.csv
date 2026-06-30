@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+mistral-nemo:12b,data_pmus_yaounde,accuracy,3.18,0.51,3.0,1,5,6800,"1: 3, 3: 5997, 4: 400, 5: 400"
+mistral-nemo:12b,data_pmus_yaounde,relevance,3.18,0.51,3.0,1,5,6800,"1: 3, 3: 5997, 4: 400, 5: 400"
+mistral-nemo:12b,data_pmus_yaounde,coherence,3.18,0.51,3.0,1,5,6800,"1: 3, 3: 5997, 4: 400, 5: 400"
+mistral-nemo:12b,data_pmus_yaounde,completeness,4.06,0.24,4.0,1,5,6800,"1: 3, 4: 6397, 5: 400"
+mistral-nemo:12b,data_pmus_yaounde,fluency,4.06,0.24,4.0,3,5,6800,"3: 3, 4: 6397, 5: 400"

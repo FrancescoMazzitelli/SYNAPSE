@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+llama3.1:8b,data_pmus_yaounde,accuracy,3.18,0.51,3.0,3,5,6800,"3: 6000, 4: 400, 5: 400"
+llama3.1:8b,data_pmus_yaounde,relevance,3.18,0.51,3.0,3,5,6800,"3: 6000, 4: 400, 5: 400"
+llama3.1:8b,data_pmus_yaounde,coherence,3.18,0.51,3.0,3,5,6800,"3: 6000, 4: 400, 5: 400"
+llama3.1:8b,data_pmus_yaounde,completeness,4.06,0.24,4.0,4,5,6800,"4: 6400, 5: 400"
+llama3.1:8b,data_pmus_yaounde,fluency,4.06,0.24,4.0,4,5,6800,"4: 6400, 5: 400"

@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+gpt-oss:20b,data_MyDailyTravelData,accuracy,4.51,1.02,5.0,1,5,36200,"1: 1409, 3: 5674, 4: 573, 5: 28544"
+gpt-oss:20b,data_MyDailyTravelData,relevance,4.53,1.01,5.0,1,5,36200,"1: 1409, 3: 5674, 4: 173, 5: 28944"
+gpt-oss:20b,data_MyDailyTravelData,coherence,4.53,1.01,5.0,1,5,36200,"1: 1409, 3: 5674, 4: 173, 5: 28944"
+gpt-oss:20b,data_MyDailyTravelData,completeness,4.68,0.83,5.0,1,5,36200,"1: 1409, 4: 5847, 5: 28944"
+gpt-oss:20b,data_MyDailyTravelData,fluency,4.76,0.51,5.0,3,5,36200,"3: 1409, 4: 5847, 5: 28944"

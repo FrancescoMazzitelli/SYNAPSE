@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+gemma3:27b,data_lyon_EDGT,accuracy,2.72,1.92,1.0,1,5,45800,"1: 25216, 3: 141, 4: 3303, 5: 17140"
+gemma3:27b,data_lyon_EDGT,relevance,2.79,1.98,1.0,1,5,45800,"1: 25216, 3: 141, 4: 103, 5: 20340"
+gemma3:27b,data_lyon_EDGT,coherence,2.79,1.98,1.0,1,5,45800,"1: 25216, 3: 141, 4: 103, 5: 20340"
+gemma3:27b,data_lyon_EDGT,completeness,2.79,1.99,1.0,1,5,45800,"1: 25216, 4: 244, 5: 20340"
+gemma3:27b,data_lyon_EDGT,fluency,3.89,0.99,3.0,3,5,45800,"3: 25216, 4: 244, 5: 20340"

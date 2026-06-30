@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+gpt-oss:20b,data_hanoi,accuracy,3.02,1.14,3.0,1,5,10600,"1: 1754, 3: 6610, 4: 717, 5: 1519"
+gpt-oss:20b,data_hanoi,relevance,3.02,1.14,3.0,1,5,10600,"1: 1754, 3: 6610, 4: 717, 5: 1519"
+gpt-oss:20b,data_hanoi,coherence,3.02,1.14,3.0,1,5,10600,"1: 1754, 3: 6610, 4: 717, 5: 1519"
+gpt-oss:20b,data_hanoi,completeness,3.65,1.23,4.0,1,5,10600,"1: 1754, 4: 7327, 5: 1519"
+gpt-oss:20b,data_hanoi,fluency,3.98,0.56,4.0,3,5,10600,"3: 1754, 4: 7327, 5: 1519"

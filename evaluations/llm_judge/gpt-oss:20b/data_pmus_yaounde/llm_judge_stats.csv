@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+gpt-oss:20b,data_pmus_yaounde,accuracy,2.9,0.92,3.0,1,5,6800,"1: 948, 3: 5052, 4: 400, 5: 400"
+gpt-oss:20b,data_pmus_yaounde,relevance,2.9,0.92,3.0,1,5,6800,"1: 948, 3: 5052, 4: 400, 5: 400"
+gpt-oss:20b,data_pmus_yaounde,coherence,2.9,0.92,3.0,1,5,6800,"1: 948, 3: 5052, 4: 400, 5: 400"
+gpt-oss:20b,data_pmus_yaounde,completeness,3.64,1.09,4.0,1,5,6800,"1: 948, 4: 5452, 5: 400"
+gpt-oss:20b,data_pmus_yaounde,fluency,3.92,0.44,4.0,3,5,6800,"3: 948, 4: 5452, 5: 400"

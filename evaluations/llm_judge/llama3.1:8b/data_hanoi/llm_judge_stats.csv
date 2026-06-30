@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+llama3.1:8b,data_hanoi,accuracy,3.3,1.2,3.0,1,5,10600,"1: 1444, 3: 5289, 4: 1648, 5: 2219"
+llama3.1:8b,data_hanoi,relevance,3.4,1.29,3.0,1,5,10600,"1: 1444, 3: 5289, 4: 648, 5: 3219"
+llama3.1:8b,data_hanoi,coherence,3.4,1.29,3.0,1,5,10600,"1: 1444, 3: 5289, 4: 648, 5: 3219"
+llama3.1:8b,data_hanoi,completeness,3.9,1.23,4.0,1,5,10600,"1: 1444, 4: 5937, 5: 3219"
+llama3.1:8b,data_hanoi,fluency,4.17,0.64,4.0,3,5,10600,"3: 1444, 4: 5937, 5: 3219"

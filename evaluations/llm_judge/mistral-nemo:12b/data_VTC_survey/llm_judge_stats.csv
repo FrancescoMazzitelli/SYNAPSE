@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+mistral-nemo:12b,data_VTC_survey,accuracy,2.84,0.83,3.0,1,5,27200,"1: 3800, 3: 20833, 4: 2021, 5: 546"
+mistral-nemo:12b,data_VTC_survey,relevance,2.84,0.83,3.0,1,5,27200,"1: 3800, 3: 20833, 4: 2021, 5: 546"
+mistral-nemo:12b,data_VTC_survey,coherence,2.84,0.83,3.0,1,5,27200,"1: 3800, 3: 20833, 4: 2021, 5: 546"
+mistral-nemo:12b,data_VTC_survey,completeness,3.6,1.06,4.0,1,5,27200,"1: 3800, 4: 22854, 5: 546"
+mistral-nemo:12b,data_VTC_survey,fluency,3.88,0.38,4.0,3,5,27200,"3: 3800, 4: 22854, 5: 546"

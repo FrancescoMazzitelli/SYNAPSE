@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+llama3.1:8b,data_lyon_EDGT,accuracy,2.68,1.87,1.0,1,5,45800,"1: 24818, 3: 763, 4: 5398, 5: 14821"
+llama3.1:8b,data_lyon_EDGT,relevance,2.8,1.97,1.0,1,5,45800,"1: 24818, 3: 763, 5: 20219"
+llama3.1:8b,data_lyon_EDGT,coherence,2.8,1.97,1.0,1,5,45800,"1: 24818, 3: 763, 5: 20219"
+llama3.1:8b,data_lyon_EDGT,completeness,2.82,1.98,1.0,1,5,45800,"1: 24818, 4: 763, 5: 20219"
+llama3.1:8b,data_lyon_EDGT,fluency,3.9,0.99,3.0,3,5,45800,"3: 24818, 4: 763, 5: 20219"

@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+mistral:7b,data_lyon_EDGT,accuracy,2.65,1.93,1.0,1,5,45800,"1: 26286, 3: 361, 4: 1620, 5: 17533"
+mistral:7b,data_lyon_EDGT,relevance,2.69,1.97,1.0,1,5,45800,"1: 26286, 3: 361, 4: 20, 5: 19133"
+mistral:7b,data_lyon_EDGT,coherence,2.69,1.97,1.0,1,5,45800,"1: 26286, 3: 361, 4: 20, 5: 19133"
+mistral:7b,data_lyon_EDGT,completeness,2.7,1.97,1.0,1,5,45800,"1: 26286, 4: 381, 5: 19133"
+mistral:7b,data_lyon_EDGT,fluency,3.84,0.98,3.0,3,5,45800,"3: 26286, 4: 381, 5: 19133"

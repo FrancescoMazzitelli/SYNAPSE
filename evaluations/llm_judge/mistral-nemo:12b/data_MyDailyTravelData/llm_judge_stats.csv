@@ -1,0 +1,6 @@
+Model,Dataset,Dimension,Mean,Std,Median,Min,Max,N,Distribution
+mistral-nemo:12b,data_MyDailyTravelData,accuracy,4.61,0.92,5.0,1,5,36200,"1: 1050, 3: 4756, 4: 379, 5: 30015"
+mistral-nemo:12b,data_MyDailyTravelData,relevance,4.61,0.92,5.0,1,5,36200,"1: 1050, 3: 4756, 4: 379, 5: 30015"
+mistral-nemo:12b,data_MyDailyTravelData,coherence,4.61,0.92,5.0,1,5,36200,"1: 1050, 3: 4756, 4: 379, 5: 30015"
+mistral-nemo:12b,data_MyDailyTravelData,completeness,4.74,0.73,5.0,1,5,36200,"1: 1050, 4: 5135, 5: 30015"
+mistral-nemo:12b,data_MyDailyTravelData,fluency,4.8,0.47,5.0,3,5,36200,"3: 1050, 4: 5135, 5: 30015"
