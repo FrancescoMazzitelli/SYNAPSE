@@ -1,0 +1,14 @@
+Ablation run: llama3.1:8b|data_hanoi|seed-1|mem-none_temp-0
+Dataset: data_hanoi
+Model: ollama/llama3.1:8b
+Temperature: 0.0
+Memory condition: none (mode=none, window=0)
+Sampling seed: 1
+Agents: 5 (sampled with the paper procedure)
+Questions: 53
+Demographic labels: ['age', 'occup', 'gender', 'origlat', 'origlon', 'destlat', 'destlon', 'purp', 'vehic', 'freqpweek', 'OD_dist', 'travtime', 'reason', 'own_car', 'own_motob', 'own_ebike', 'own_bike']
+Start: 2026-11-18 12:02:54
+End: 2026-11-18 12:06:25
+Duration (hours): 0.059
+Responses: 5/5
+Successful write to disk: True

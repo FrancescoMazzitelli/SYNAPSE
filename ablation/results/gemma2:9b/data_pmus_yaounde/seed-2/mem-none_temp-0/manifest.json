@@ -1,0 +1,29 @@
+{
+  "run_id": "gemma2:9b|data_pmus_yaounde|seed-2|mem-none_temp-0",
+  "status": "ok",
+  "model": "gemma2:9b",
+  "chat_model": "ollama/gemma2:9b",
+  "dataset": "data_pmus_yaounde",
+  "seed": 2,
+  "temperature": 0.0,
+  "memory": {
+    "name": "none",
+    "mode": "none",
+    "window": 0
+  },
+  "n_agents": 5,
+  "n_questions": 34,
+  "n_responses": 5,
+  "n_expected": 5,
+  "run_dir": "/root/SYNAPSE/ablation/results/gemma2:9b/data_pmus_yaounde/seed-2/mem-none_temp-0",
+  "started_at": "2026-11-18T23:41:20",
+  "finished_at": "2026-11-18T23:44:34",
+  "duration_s": 193.3,
+  "outputs": {
+    "results_csv": "/root/SYNAPSE/ablation/results/gemma2:9b/data_pmus_yaounde/seed-2/mem-none_temp-0/20261118_234120_results.csv",
+    "results_json": "/root/SYNAPSE/ablation/results/gemma2:9b/data_pmus_yaounde/seed-2/mem-none_temp-0/20261118_234120_results.json",
+    "oracle": "/root/SYNAPSE/ablation/results/gemma2:9b/data_pmus_yaounde/seed-2/mem-none_temp-0/sampled_oracle.csv",
+    "log": "/root/SYNAPSE/ablation/results/gemma2:9b/data_pmus_yaounde/seed-2/mem-none_temp-0/log.txt",
+    "config": "/root/SYNAPSE/ablation/results/gemma2:9b/data_pmus_yaounde/seed-2/mem-none_temp-0/config.json"
+  }
+}

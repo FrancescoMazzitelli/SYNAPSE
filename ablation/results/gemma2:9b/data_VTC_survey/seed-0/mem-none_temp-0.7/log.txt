@@ -1,0 +1,14 @@
+Ablation run: gemma2:9b|data_VTC_survey|seed-0|mem-none_temp-0.7
+Dataset: data_VTC_survey
+Model: ollama/gemma2:9b
+Temperature: 0.7
+Memory condition: none (mode=none, window=0)
+Sampling seed: 0
+Agents: 5 (sampled with the paper procedure)
+Questions: 136
+Demographic labels: ['genre', 'genre_autre', 'age', 'diplome', 'diplome_autre', 'situation_professionnelle', 'csp', 'compo_menage', 'compo_menage_autre', 'nb_pers_menage', 'nb_enfants_menage', 'nb_enfants_menage_14', 'revenus', 'cat_csp', 'cat_age', 'cat_aire_urbaine']
+Start: 2026-11-18 18:41:01
+End: 2026-11-18 18:50:54
+Duration (hours): 0.165
+Responses: 5/5
+Successful write to disk: True

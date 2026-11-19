@@ -12,8 +12,6 @@ from preprocess import map_generic_data, get_questions_generic
 from synthesize import load_config, SurveyAgent, build_generic_agents, infer_dtypes_with_llm
 from gp_survey_engine import AgenticSurveyPipeline
 from postprocess import ProcessSurveyResponse
-from ladarag import LADARAG, LADARAGConfig
-import json as json_module
 
 from langroid.utils.configuration import settings
 
@@ -48,7 +46,6 @@ def run_gp_survey(
     agents: List[SurveyAgent],
     batch_size: int,
     timeout_per_batch: float = 600000,
-    ladarag_engine=None
 ):
     try:
         for i in tqdm(range(0, len(agents), batch_size), desc="running batches"):
@@ -56,7 +53,7 @@ def run_gp_survey(
 
             def batch_runner():
                 nonlocal batch_results
-                SE = AgenticSurveyPipeline(questions, batch, key_mapping, ladarag_engine=ladarag_engine)
+                SE = AgenticSurveyPipeline(questions, batch, key_mapping)
                 SE.run()
                 batch_results = SE.results()
 
@@ -120,23 +117,6 @@ def main_gp(survey_path, dict_path):
     print("Step 3: Preparing questions...")
     questions = get_questions_generic(key_desc_quest_mapping=key_mapping)
 
-    print("Step 3.5: Initializing LADARAG engine (OD-trip retrieval)...")
-    with open(os.path.join(config_folder, "config.json")) as f:
-        full_config = json_module.load(f)
-    ladarag_engine = LADARAG(LADARAGConfig(full_config.get("ladarag", {})))
-    if ladarag_engine.is_enabled():
-        print(f"  LADARAG enabled with {len(ladarag_engine._storage.list_all())} service(s)")
-
-        dataset_dir = os.path.dirname(survey_path)
-        if ladarag_engine.valhalla is not None:
-            print(f"  Loading Valhalla map from: {dataset_dir}")
-            if ladarag_engine.load_map(dataset_dir):
-                print(f"  Valhalla ready (map: {ladarag_engine.valhalla.current_map})")
-            else:
-                print("  Valhalla map not loaded (no .osm.pbf files found)")
-    else:
-        print("  LADARAG disabled (set 'ladarag.enabled: true' in config.json to enable)")
-
     print("Step 4: Initializing postprocessor...")
     postprocessor = ProcessSurveyResponse(
         config_folder,
@@ -159,8 +139,7 @@ def main_gp(survey_path, dict_path):
             questions,
             agents,
             batch_size,
-            600000,
-            ladarag_engine))
+            600000))
     
     print("Step 6: Processing and saving results...")
 

@@ -1,0 +1,29 @@
+{
+  "run_id": "mistral:7b|data_pmus_yaounde|seed-0|mem-full_temp-0.7",
+  "status": "ok",
+  "model": "mistral:7b",
+  "chat_model": "ollama/mistral:7b",
+  "dataset": "data_pmus_yaounde",
+  "seed": 0,
+  "temperature": 0.7,
+  "memory": {
+    "name": "full",
+    "mode": "full",
+    "window": null
+  },
+  "n_agents": 5,
+  "n_questions": 34,
+  "n_responses": 5,
+  "n_expected": 5,
+  "run_dir": "/root/SYNAPSE/ablation/results/mistral:7b/data_pmus_yaounde/seed-0/mem-full_temp-0.7",
+  "started_at": "2026-11-19T04:39:38",
+  "finished_at": "2026-11-19T04:41:39",
+  "duration_s": 121.0,
+  "outputs": {
+    "results_csv": "/root/SYNAPSE/ablation/results/mistral:7b/data_pmus_yaounde/seed-0/mem-full_temp-0.7/20261119_043938_results.csv",
+    "results_json": "/root/SYNAPSE/ablation/results/mistral:7b/data_pmus_yaounde/seed-0/mem-full_temp-0.7/20261119_043938_results.json",
+    "oracle": "/root/SYNAPSE/ablation/results/mistral:7b/data_pmus_yaounde/seed-0/mem-full_temp-0.7/sampled_oracle.csv",
+    "log": "/root/SYNAPSE/ablation/results/mistral:7b/data_pmus_yaounde/seed-0/mem-full_temp-0.7/log.txt",
+    "config": "/root/SYNAPSE/ablation/results/mistral:7b/data_pmus_yaounde/seed-0/mem-full_temp-0.7/config.json"
+  }
+}

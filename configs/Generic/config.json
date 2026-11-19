@@ -30,44 +30,5 @@
         "continuous_variables": [],
         "multiple_choice": [],
         "exclude": []
-    },
-    "ladarag": {
-        "enabled": false,
-        "ollama_url": "http://localhost:11434",
-        "model": "phi4-reasoning:14b",
-        "timeout": 120,
-        "valhalla": {
-            "enabled": false,
-            "tile_dir": "/tmp/valhalla_tiles",
-            "costing": "auto"
-        },
-        "services": {
-            "valhalla-routing": {
-                "name": "Valhalla Routing Service",
-                "description": "REST API for origin-destination routing using the Valhalla routing engine. Provides turn-by-turn directions, distance, duration, and geometry for routes between locations. Supports multiple costing models (auto, bicycle, pedestrian, transit) and can avoid features like tolls, ferries, and highways.",
-                "url": "http://localhost:8002",
-                "endpoints": {
-                    "GET /route": {
-                        "path": "/route",
-                        "capability": "Calculate the optimal route between an origin and destination. Returns trip distance, duration, legs, and geometry. Parameters include locations (comma-separated lat,lng pairs), costing model, and optional avoid_features.",
-                        "parameters": "locations(string*), costing(string), directions_options(string), avoid_locations(string), date_time(string)",
-                        "response_schema": "{trip:obj, legs:arr, distance:float, duration:float, geometry:str, locations:arr}"
-                    }
-                }
-            },
-            "valhalla-roadblocks": {
-                "name": "Valhalla Roadblock-Aware Routing",
-                "description": "REST API for origin-destination routing that accounts for roadblocks, road closures, and construction zones. Returns routes that avoid blocked roads and provides alternative paths. Particularly useful for comparing standard routing vs roadblock-mitigated routing.",
-                "url": "http://localhost:8003",
-                "endpoints": {
-                    "GET /route": {
-                        "path": "/route",
-                        "capability": "Calculate a route between origin and destination that avoids known roadblocks and closures. Returns trip distance, duration, legs, geometry, and the number of roadblocks avoided.",
-                        "parameters": "locations(string*), costing(string), exclude_polygons(string), directions_options(string)",
-                        "response_schema": "{trip:obj, legs:arr, distance:float, duration:float, geometry:str, roadblocks_avoided:int}"
-                    }
-                }
-            }
-        }
     }
 }

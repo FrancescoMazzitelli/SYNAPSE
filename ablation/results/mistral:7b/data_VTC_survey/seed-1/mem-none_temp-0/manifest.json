@@ -1,0 +1,29 @@
+{
+  "run_id": "mistral:7b|data_VTC_survey|seed-1|mem-none_temp-0",
+  "status": "ok",
+  "model": "mistral:7b",
+  "chat_model": "ollama/mistral:7b",
+  "dataset": "data_VTC_survey",
+  "seed": 1,
+  "temperature": 0.0,
+  "memory": {
+    "name": "none",
+    "mode": "none",
+    "window": 0
+  },
+  "n_agents": 5,
+  "n_questions": 136,
+  "n_responses": 5,
+  "n_expected": 5,
+  "run_dir": "/root/SYNAPSE/ablation/results/mistral:7b/data_VTC_survey/seed-1/mem-none_temp-0",
+  "started_at": "2026-11-19T01:59:10",
+  "finished_at": "2026-11-19T02:04:45",
+  "duration_s": 334.8,
+  "outputs": {
+    "results_csv": "/root/SYNAPSE/ablation/results/mistral:7b/data_VTC_survey/seed-1/mem-none_temp-0/20261119_015910_results.csv",
+    "results_json": "/root/SYNAPSE/ablation/results/mistral:7b/data_VTC_survey/seed-1/mem-none_temp-0/20261119_015910_results.json",
+    "oracle": "/root/SYNAPSE/ablation/results/mistral:7b/data_VTC_survey/seed-1/mem-none_temp-0/sampled_oracle.csv",
+    "log": "/root/SYNAPSE/ablation/results/mistral:7b/data_VTC_survey/seed-1/mem-none_temp-0/log.txt",
+    "config": "/root/SYNAPSE/ablation/results/mistral:7b/data_VTC_survey/seed-1/mem-none_temp-0/config.json"
+  }
+}

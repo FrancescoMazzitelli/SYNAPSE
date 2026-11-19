@@ -1,0 +1,14 @@
+Ablation run: mistral:7b|data_pmus_yaounde|seed-2|mem-none_temp-0
+Dataset: data_pmus_yaounde
+Model: ollama/mistral:7b
+Temperature: 0.0
+Memory condition: none (mode=none, window=0)
+Sampling seed: 2
+Agents: 5 (sampled with the paper procedure)
+Questions: 34
+Demographic labels: ['CENTRE VILLE', 'Q1_1', 'Q1_1_A', 'Q1_1_B', 'Q1_1_C', 'Q1_2', 'Q1_2_A', 'Q1_2_B', 'Q1_3_C', 'Q4_4', 'Q4_4_AUTRES', 'Q5_1', 'Q5_2', 'Q5_3']
+Start: 2026-11-19 04:52:50
+End: 2026-11-19 04:54:22
+Duration (hours): 0.025
+Responses: 5/5
+Successful write to disk: True

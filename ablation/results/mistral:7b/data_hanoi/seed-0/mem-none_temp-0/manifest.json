@@ -1,0 +1,29 @@
+{
+  "run_id": "mistral:7b|data_hanoi|seed-0|mem-none_temp-0",
+  "status": "ok",
+  "model": "mistral:7b",
+  "chat_model": "ollama/mistral:7b",
+  "dataset": "data_hanoi",
+  "seed": 0,
+  "temperature": 0.0,
+  "memory": {
+    "name": "none",
+    "mode": "none",
+    "window": 0
+  },
+  "n_agents": 5,
+  "n_questions": 53,
+  "n_responses": 5,
+  "n_expected": 5,
+  "run_dir": "/root/SYNAPSE/ablation/results/mistral:7b/data_hanoi/seed-0/mem-none_temp-0",
+  "started_at": "2026-11-18T23:59:58",
+  "finished_at": "2026-11-19T00:02:02",
+  "duration_s": 124.4,
+  "outputs": {
+    "results_csv": "/root/SYNAPSE/ablation/results/mistral:7b/data_hanoi/seed-0/mem-none_temp-0/20261118_235958_results.csv",
+    "results_json": "/root/SYNAPSE/ablation/results/mistral:7b/data_hanoi/seed-0/mem-none_temp-0/20261118_235958_results.json",
+    "oracle": "/root/SYNAPSE/ablation/results/mistral:7b/data_hanoi/seed-0/mem-none_temp-0/sampled_oracle.csv",
+    "log": "/root/SYNAPSE/ablation/results/mistral:7b/data_hanoi/seed-0/mem-none_temp-0/log.txt",
+    "config": "/root/SYNAPSE/ablation/results/mistral:7b/data_hanoi/seed-0/mem-none_temp-0/config.json"
+  }
+}

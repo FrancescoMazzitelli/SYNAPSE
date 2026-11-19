@@ -1,12 +1,9 @@
 from preprocess import *
 from langroid.language_models import LLMMessage
 from synthesize import SurveyAgent
-from typing import Tuple, Union, Dict, List, Set, Any
+from typing import Tuple, Dict, List, Any
 from dataclasses import dataclass
-import json
-import re
 import random
-import os
 
 GENERIC_PHRASES = ["other", "something else", "please describe", "other (specify)"]
 
@@ -26,34 +23,6 @@ def _has_specific_options(possible_answers: List[Any]) -> bool:
         if not isinstance(a, str):
             return True
     return False
-
-
-def _extract_coordinates(response: str) -> Tuple[Optional[float], Optional[float]]:
-    patterns = [
-        r'["\']?(?:lat(?:itude)?|origlat)["\']?\s*[:=]\s*([-+]?\d*\.\d+|\d+)',
-        r'["\']?(?:lon(?:gitude)?|origlon)["\']?\s*[:=]\s*([-+]?\d*\.\d+|\d+)',
-        r'([-+]?\d*\.\d+)\s*,\s*([-+]?\d*\.\d+)',
-        r'([-+]?\d*\.\d+)\s+([-+]?\d*\.\d+)',
-    ]
-    lat, lon = None, None
-    for p in patterns[:2]:
-        m = re.search(p, response, re.IGNORECASE)
-        if m:
-            try:
-                if p.startswith(r'["\']?lat'):
-                    lat = float(m.group(1))
-                else:
-                    lon = float(m.group(1))
-            except (ValueError, IndexError):
-                pass
-    if lat is None or lon is None:
-        m = re.search(r'([-+]?\d*\.\d+)\s*[,;\s]\s*([-+]?\d*\.\d+)', response)
-        if m:
-            lat, lon = float(m.group(1)), float(m.group(2))
-    if lat is not None and lon is not None:
-        if abs(lat) > 90 or abs(lon) > 180:
-            lat, lon = lon, lat
-    return lat, lon
 
 
 def _response_from_tool_message(response_doc):
@@ -106,13 +75,11 @@ class AgenticSurveyPipeline:
     Enhanced Survey Pipeline where agents intelligently select tools
     based on the answer sets provided.
     """
-    def __init__(self, questions: Dict, agents: List[SurveyAgent], mapping_dict: Dict,
-                 ladarag_engine=None):
+    def __init__(self, questions: Dict, agents: List[SurveyAgent], mapping_dict: Dict):
         self.questions = questions
         self.agents = agents
         self.mapping_dict = mapping_dict
         self.respondent_summaries = []
-        self.ladarag = ladarag_engine
 
     def _generate_memory_context(self, history: List[Tuple[str, str]]) -> str:
         if not history:
@@ -124,8 +91,7 @@ class AgenticSurveyPipeline:
             context_block += f"Question: {q}\nAnswer: {a}\n"
         return context_block
 
-    def _create_agent_prompt(self, question_text: str, question_info: Dict, memory_prompt: str,
-                               od_context: str = "", poi_context: str = "") -> str:
+    def _create_agent_prompt(self, question_text: str, question_info: Dict, memory_prompt: str) -> str:
         possible_answers = question_info.get("possible_answers", [])
         answer_count = question_info.get("answer_count", 0)
         dtype = question_info.get("dtype", "TEXT")
@@ -141,9 +107,6 @@ class AgenticSurveyPipeline:
         from preprocess import format_answer_set_for_prompt
         formatted_answers = format_answer_set_for_prompt(sampled_answers) if possible_answers else "Open-ended response (no predefined answers)"
         
-        od_section = od_context if od_context else ""
-        poi_section = poi_context if poi_context else ""
-
         if dtype == "SINGLE":
             format_instruction = '{"request": "single", "value": "<one option from the list>"}'
             extra_rules = "- Select exactly ONE option from the list."
@@ -163,7 +126,6 @@ class AgenticSurveyPipeline:
 ### ANSWER SET ENFORCEMENT (CRITICAL)
 You have a predefined list of possible answers for this question. You MUST select from that list.
 Do NOT invent new options. Do NOT modify the wording of existing options.
-If the question asks about accessibility, availability, or proximity, use the nearby POI context provided.
 """
 
         prompt = f"""
@@ -172,8 +134,6 @@ If the question asks about accessibility, availability, or proximity, use the ne
 
 ### POSSIBLE ANSWERS:
 {formatted_answers}
-{poi_section}
-{od_section}
 ### RECENT ANSWERS (memory for consistency):
 {memory_prompt or 'None'}
 {answer_set_warning}
@@ -200,82 +160,6 @@ Expected response format:
 """
         return prompt
 
-    def _build_valhalla_od_context(
-        self, ladarag_result: dict, question_text: str, agent_bio: str
-    ) -> str:
-        """Build OD context using Valhalla routing when available.
-
-        Uses the LLM-generated trip scenario to extract approximate
-        origin/destination, then queries Valhalla for actual route data.
-        """
-        if not ladarag_result:
-            return self.ladarag.format_od_context({})
-
-        origin_name = ladarag_result.get("origin", "")
-        dest_name = ladarag_result.get("destination", "")
-        mode = ladarag_result.get("mode", "auto")
-
-        costing_map = {
-            "car": "auto", "auto": "auto", "driving": "auto",
-            "bike": "bicycle", "bicycle": "bicycle", "cycling": "bicycle",
-            "walk": "pedestrian", "pedestrian": "pedestrian", "walking": "pedestrian",
-            "transit": "transit", "bus": "transit", "train": "transit",
-        }
-        costing = costing_map.get(mode.lower(), "auto")
-
-        try:
-            import requests
-            geocode_url = f"{self.ladarag._config.ollama_url}/api/chat"
-            geocode_prompt = (
-                f"Given these location names, return their approximate latitude and longitude "
-                f"as a JSON object with keys 'origin' and 'destination', each containing "
-                f"'lat' and 'lon' as floats. Use real-world coordinates.\n\n"
-                f"Origin: {origin_name}\n"
-                f"Destination: {dest_name}\n\n"
-                f"Return ONLY JSON."
-            )
-            resp = requests.post(
-                geocode_url,
-                json={
-                    "model": self.ladarag._config.model,
-                    "format": {
-                        "type": "object",
-                        "properties": {
-                            "origin": {"type": "object", "properties": {"lat": {"type": "number"}, "lon": {"type": "number"}}, "required": ["lat", "lon"]},
-                            "destination": {"type": "object", "properties": {"lat": {"type": "number"}, "lon": {"type": "number"}}, "required": ["lat", "lon"]},
-                        },
-                        "required": ["origin", "destination"],
-                    },
-                    "messages": [{"role": "user", "content": geocode_prompt}],
-                    "options": {"temperature": 0.0, "num_predict": 200},
-                    "stream": False,
-                },
-                timeout=30,
-            )
-            resp.raise_for_status()
-            coords = json.loads(resp.json()["message"]["content"].strip())
-            origin = (coords["origin"]["lat"], coords["origin"]["lon"])
-            dest = (coords["destination"]["lat"], coords["destination"]["lon"])
-
-            route = self.ladarag.query_route(origin, dest, costing=costing)
-            if route:
-                trip = route.get("trip", {})
-                summary = trip.get("summary", {})
-                distance_km = summary.get("length", 0)
-                duration_min = round(summary.get("time", 0) / 60, 1)
-                return (
-                    "### Origin-Destination Context (computed via Valhalla)\n"
-                    f"Origin: {origin_name}\n"
-                    f"Destination: {dest_name}\n"
-                    f"Distance: {distance_km:.1f} km\n"
-                    f"Duration: {duration_min:.0f} minutes\n"
-                    f"Mode: {mode}"
-                )
-        except Exception as e:
-            print(f"[VALHALLA] Route computation failed: {e}")
-
-        return self.ladarag.format_od_context(ladarag_result)
-
     def run(self):
         for agent in self.agents:
             history = []
@@ -285,7 +169,6 @@ Expected response format:
             tool_dtypes = []
             encoded_responses = []
             tool_choices = []
-            agent_lat, agent_lon = None, None
             
             for q_key in self.questions.keys():
                 question_info = self.questions[q_key]
@@ -295,42 +178,13 @@ Expected response format:
                 if isinstance(q_desc, tuple):
                     q_desc = q_desc[0]
                 
-                od_context = ""
-                poi_context = ""
-                if self.ladarag and self.ladarag.is_enabled():
-                    try:
-                        if agent_lat is not None and agent_lon is not None:
-                            poi_context = self.ladarag.query_poi_context(
-                                agent_lat, agent_lon, q_text, q_desc,
-                            )
-
-                        is_od = self.ladarag.classify_question(
-                            question_text=q_text,
-                            question_desc=q_desc,
-                            agent_bio=agent.bio
-                        )
-                        if is_od:
-                            ladarag_result = self.ladarag.query(
-                                question_text=q_text,
-                                question_desc=q_desc,
-                                agent_bio=agent.bio
-                            )
-                            if self.ladarag.valhalla is not None and self.ladarag.valhalla.is_ready:
-                                od_context = self._build_valhalla_od_context(
-                                    ladarag_result, q_text, agent.bio
-                                )
-                            else:
-                                od_context = self.ladarag.format_od_context(ladarag_result)
-                    except Exception as e:
-                        print(f"[LADARAG] Error processing question '{q_key}' for agent {agent.agent_id}: {e}")
-                
                 memory_prompt = self._generate_memory_context(history)
                 expected_dtype = question_info.get("dtype", "TEXT")
                 possible_answers = question_info.get("possible_answers", [])
                 retry_feedback_given = False
 
                 for attempt in range(2):
-                    prompt = self._create_agent_prompt(q_text, question_info, memory_prompt, od_context, poi_context)
+                    prompt = self._create_agent_prompt(q_text, question_info, memory_prompt)
                     if retry_feedback_given:
                         prompt += "\n\n### FEEDBACK\nYour previous response selected a generic or non-specific option, or was not a valid answer. Please carefully review ALL available options and select the most appropriate specific option that accurately reflects your profile. Do not default to catch-all options.\n"
 
@@ -397,12 +251,6 @@ Expected response format:
                 tool_dtypes.append(t_type)
                 encoded_responses.append(val)
                 tool_choices.append(t_type)
-
-                if agent_lat is None or agent_lon is None:
-                    raw_resp = str(response_doc) if response_doc else str(val)
-                    lat, lon = _extract_coordinates(raw_resp)
-                    if lat is not None and lon is not None:
-                        agent_lat, agent_lon = lat, lon
 
             self.respondent_summaries.append(AgenticResponsePackage(
                 agent_id=agent.config.name,

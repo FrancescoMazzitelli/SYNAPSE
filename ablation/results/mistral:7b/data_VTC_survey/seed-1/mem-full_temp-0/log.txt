@@ -1,0 +1,14 @@
+Ablation run: mistral:7b|data_VTC_survey|seed-1|mem-full_temp-0
+Dataset: data_VTC_survey
+Model: ollama/mistral:7b
+Temperature: 0.0
+Memory condition: full (mode=full, window=None)
+Sampling seed: 1
+Agents: 5 (sampled with the paper procedure)
+Questions: 136
+Demographic labels: ['genre', 'genre_autre', 'age', 'diplome', 'diplome_autre', 'situation_professionnelle', 'csp', 'compo_menage', 'compo_menage_autre', 'nb_pers_menage', 'nb_enfants_menage', 'nb_enfants_menage_14', 'revenus', 'cat_csp', 'cat_age', 'cat_aire_urbaine']
+Start: 2026-11-19 02:11:43
+End: 2026-11-19 02:37:00
+Duration (hours): 0.421
+Responses: 5/5
+Successful write to disk: True

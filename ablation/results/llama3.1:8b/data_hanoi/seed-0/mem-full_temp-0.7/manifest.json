@@ -1,0 +1,29 @@
+{
+  "run_id": "llama3.1:8b|data_hanoi|seed-0|mem-full_temp-0.7",
+  "status": "ok",
+  "model": "llama3.1:8b",
+  "chat_model": "ollama/llama3.1:8b",
+  "dataset": "data_hanoi",
+  "seed": 0,
+  "temperature": 0.7,
+  "memory": {
+    "name": "full",
+    "mode": "full",
+    "window": null
+  },
+  "n_agents": 5,
+  "n_questions": 53,
+  "n_responses": 5,
+  "n_expected": 5,
+  "run_dir": "/home/francesco/Desktop/SYNAPSE/ablation/results/llama3.1:8b/data_hanoi/seed-0/mem-full_temp-0.7",
+  "started_at": "2026-11-18T11:58:38",
+  "finished_at": "2026-11-18T12:02:52",
+  "duration_s": 254.2,
+  "outputs": {
+    "results_csv": "/home/francesco/Desktop/SYNAPSE/ablation/results/llama3.1:8b/data_hanoi/seed-0/mem-full_temp-0.7/20261118_115838_results.csv",
+    "results_json": "/home/francesco/Desktop/SYNAPSE/ablation/results/llama3.1:8b/data_hanoi/seed-0/mem-full_temp-0.7/20261118_115838_results.json",
+    "oracle": "/home/francesco/Desktop/SYNAPSE/ablation/results/llama3.1:8b/data_hanoi/seed-0/mem-full_temp-0.7/sampled_oracle.csv",
+    "log": "/home/francesco/Desktop/SYNAPSE/ablation/results/llama3.1:8b/data_hanoi/seed-0/mem-full_temp-0.7/log.txt",
+    "config": "/home/francesco/Desktop/SYNAPSE/ablation/results/llama3.1:8b/data_hanoi/seed-0/mem-full_temp-0.7/config.json"
+  }
+}

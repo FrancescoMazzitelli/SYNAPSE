@@ -1,0 +1,14 @@
+Ablation run: mistral:7b|data_hanoi|seed-0|mem-window5_temp-0.7
+Dataset: data_hanoi
+Model: ollama/mistral:7b
+Temperature: 0.7
+Memory condition: window5 (mode=window, window=5)
+Sampling seed: 0
+Agents: 5 (sampled with the paper procedure)
+Questions: 53
+Demographic labels: ['age', 'occup', 'gender', 'origlat', 'origlon', 'destlat', 'destlon', 'purp', 'vehic', 'freqpweek', 'OD_dist', 'travtime', 'reason', 'own_car', 'own_motob', 'own_ebike', 'own_bike']
+Start: 2026-11-19 00:09:15
+End: 2026-11-19 00:11:33
+Duration (hours): 0.038
+Responses: 5/5
+Successful write to disk: True

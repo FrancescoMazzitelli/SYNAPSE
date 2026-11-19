@@ -1,0 +1,59 @@
+{
+  "_notes": [
+    "Pilot ablation plan. Edit freely: every field below is read by ablation/run_ablation.py.",
+    "Cost ~= len(models) x len(datasets) x len(seeds) x len(temperatures) x len(memory_conditions) runs.",
+    "Each run uses 'agents' personas x all selected questions and really calls the LLM.",
+    "Use --models/--datasets/--seeds/--max-runs on the CLI to run a smaller pilot.",
+    "llm_base_url is the Ollama-compatible API; llm_api_base is the OpenAI-compatible URL used by langroid.",
+    "The 200 bios in configs/Generic/bio/ are reused as-is: bio_model=null means never regenerate them.",
+    "'__config__' for bio_model would keep configs/Generic/config.json's synthesis.bio_model."
+  ],
+  "config_folder": "configs/Generic",
+  "output_dir": "ablation/results",
+  "cache_dir": "ablation/cache",
+  "llm_base_url": "http://192.168.250.40:15888",
+  "llm_api_base": "http://192.168.250.40:15888/v1",
+  "llm_api_key": "ollama",
+  "datasets": [
+    "data_hanoi",
+    "data_VTC_survey",
+    "data_pmus_yaounde"
+  ],
+  "models": [
+    "llama3.1:8b",
+    "gemma2:9b",
+    "mistral:7b"
+  ],
+  "agents": 5,
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "temperatures": [
+    0.0,
+    0.7
+  ],
+  "memory_conditions": [
+    {
+      "name": "none",
+      "mode": "none"
+    },
+    {
+      "name": "window5",
+      "mode": "window",
+      "window": 5
+    },
+    {
+      "name": "full",
+      "mode": "full"
+    }
+  ],
+  "questions": "all",
+  "batch_size": 5,
+  "timeout_per_batch": 600000,
+  "bio_model": null,
+  "dtype_model": "gpt-oss:20b",
+  "model_overrides": {},
+  "resume": true
+}

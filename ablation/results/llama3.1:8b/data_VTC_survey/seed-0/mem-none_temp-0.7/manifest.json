@@ -1,0 +1,29 @@
+{
+  "run_id": "llama3.1:8b|data_VTC_survey|seed-0|mem-none_temp-0.7",
+  "status": "ok",
+  "model": "llama3.1:8b",
+  "chat_model": "ollama/llama3.1:8b",
+  "dataset": "data_VTC_survey",
+  "seed": 0,
+  "temperature": 0.7,
+  "memory": {
+    "name": "none",
+    "mode": "none",
+    "window": 0
+  },
+  "n_agents": 5,
+  "n_questions": 136,
+  "n_responses": 5,
+  "n_expected": 5,
+  "run_dir": "/home/francesco/Desktop/SYNAPSE/ablation/results/llama3.1:8b/data_VTC_survey/seed-0/mem-none_temp-0.7",
+  "started_at": "2026-11-18T13:35:17",
+  "finished_at": "2026-11-18T13:44:11",
+  "duration_s": 533.4,
+  "outputs": {
+    "results_csv": "/home/francesco/Desktop/SYNAPSE/ablation/results/llama3.1:8b/data_VTC_survey/seed-0/mem-none_temp-0.7/20261118_133517_results.csv",
+    "results_json": "/home/francesco/Desktop/SYNAPSE/ablation/results/llama3.1:8b/data_VTC_survey/seed-0/mem-none_temp-0.7/20261118_133517_results.json",
+    "oracle": "/home/francesco/Desktop/SYNAPSE/ablation/results/llama3.1:8b/data_VTC_survey/seed-0/mem-none_temp-0.7/sampled_oracle.csv",
+    "log": "/home/francesco/Desktop/SYNAPSE/ablation/results/llama3.1:8b/data_VTC_survey/seed-0/mem-none_temp-0.7/log.txt",
+    "config": "/home/francesco/Desktop/SYNAPSE/ablation/results/llama3.1:8b/data_VTC_survey/seed-0/mem-none_temp-0.7/config.json"
+  }
+}
